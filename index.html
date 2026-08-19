@@ -106,19 +106,20 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
 .slide-stage{position:relative;overflow:hidden;border-radius:16px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}
 .slide-topbar{height:6px;background:var(--line-2);position:relative}
 .slide-topbar i{position:absolute;left:0;top:0;bottom:0;width:16.6%;background:var(--band);transition:width .4s ease}
-.slide{padding:26px 24px 26px;text-align:center;display:none}
-.slide.on{display:block;animation:rise .35s ease both}
-.slide-head{display:flex;justify-content:center;margin-bottom:16px}
+.slide{padding:24px 24px 26px;display:none;min-height:388px}
+.slide.on{display:flex;flex-direction:column;animation:rise .35s ease both}
+.slide-head{display:flex;justify-content:flex-start;margin-bottom:18px}
 .slide-num{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:6px 13px;border-radius:99px}
-.slide .ico{width:92px;height:92px;margin:0 auto 16px;border-radius:22px;display:grid;place-items:center}
-.slide .ico svg{width:50px;height:50px}
-.slide h3{font-size:1.35rem;font-weight:800;margin:0 0 12px;letter-spacing:-.01em}
-.slide .pts{list-style:none;padding:0;margin:0 auto;text-align:left;max-width:400px}
-.slide .pts li{position:relative;padding:9px 0 9px 30px;font-weight:600;font-size:.96rem;border-bottom:1px dashed var(--line)}
+.slide .titlerow{display:flex;align-items:center;gap:16px;margin-bottom:18px;text-align:left}
+.slide .ico{width:64px;height:64px;flex:none;border-radius:16px;display:grid;place-items:center}
+.slide .ico svg{width:36px;height:36px}
+.slide h3{font-size:1.3rem;font-weight:800;margin:0;letter-spacing:-.01em;line-height:1.15}
+.slide .pts{list-style:none;padding:0;margin:0;text-align:left}
+.slide .pts li{position:relative;padding:10px 0 10px 30px;font-weight:600;font-size:.96rem;border-bottom:1px dashed var(--line)}
 .slide .pts li:last-child{border-bottom:none}
-.slide .pts li::before{content:"";position:absolute;left:2px;top:14px;width:14px;height:14px;border-radius:5px;background:var(--green)}
+.slide .pts li::before{content:"";position:absolute;left:2px;top:15px;width:14px;height:14px;border-radius:5px;background:var(--green)}
 .slide.hazard .pts li::before{background:var(--orange)}
-.slide .callout{margin-top:16px;background:var(--warm);border:1px solid var(--line);border-left:5px solid var(--magenta);border-radius:10px;padding:12px 14px;font-size:.86rem;font-weight:600;color:var(--ink);text-align:left}
+.slide .callout{margin-top:auto;background:var(--warm);border:1px solid var(--line);border-left:5px solid var(--magenta);border-radius:10px;padding:12px 14px;font-size:.86rem;font-weight:600;color:var(--ink);text-align:left}
 .slide-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-top:1px solid var(--line);background:var(--warm)}
 .dots{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;flex:1}
 .dots b{width:9px;height:9px;border-radius:99px;background:var(--line-2);transition:.2s;cursor:pointer}
@@ -275,8 +276,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
 .faq-note{background:#fdf3dd;border:1px solid #f3d98a;color:#8a6200;border-radius:10px;padding:12px 15px;font-size:.82rem;font-weight:600;margin-bottom:16px}
 .faq-item{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden;background:#fff}
 .faq-q{width:100%;text-align:left;border:none;background:#fff;padding:16px 18px;font-weight:800;font-size:.98rem;display:flex;justify-content:space-between;gap:12px;align-items:center;color:var(--ink)}
-.faq-q .pm{color:var(--green);font-size:1.4rem;font-weight:800;flex:none;transition:.2s;line-height:1}
-.faq-item.open .faq-q .pm{transform:rotate(45deg)}
+.faq-q .pm{color:var(--green);font-size:1.4rem;font-weight:800;flex:none;line-height:1;width:20px;text-align:center}
 .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
 .faq-item.open .faq-a{max-height:600px}
 .faq-a .inner{padding:0 18px 18px}
@@ -329,7 +329,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
   <div class="wrap">
 
     <div class="panel" id="step-0">
-      <div class="eyebrow">Site safety · all visitors</div>
+      <div class="eyebrow">Site safety · workers &amp; visitors</div>
       <h1 class="big">Before you<br>enter the markets</h1>
       <p class="lede">A short safety induction for everyone entering Sydney Markets — traders, drivers, contractors and the public. Takes about 5 minutes. You'll need it on hand when security asks.</p>
       <div class="card">
@@ -340,7 +340,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
         </div>
         <div class="field" data-f="mobile"><label>Mobile number <span class="r">*</span></label><input id="f-mobile" type="tel" inputmode="numeric" placeholder="0400 000 000" autocomplete="tel"><div class="hint">This is your unique induction ID.</div><div class="err">Enter a valid Australian mobile (e.g. 0400 000 000)</div></div>
         <div class="field" data-f="email"><label>Email <span class="r">*</span></label><input id="f-email" type="email" placeholder="you@email.com" autocomplete="email"><div class="err">Enter a valid email address</div></div>
-        <div class="field" data-f="company"><label>Company / organisation <span style="color:var(--muted);font-weight:600">(optional)</span></label><input id="f-company" type="text" placeholder="e.g. Favetta Fresh Produce" autocomplete="organization"></div>
+        <div class="field" data-f="company"><label>Company / organisation <span class="r">*</span></label><input id="f-company" type="text" placeholder="e.g. Favetta Fresh Produce" autocomplete="organization"><div class="err">Enter your company or organisation</div></div>
       </div>
     </div>
 
@@ -366,7 +366,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
     </div>
 
     <div class="panel hidden" id="step-2">
-      <div class="step-head"><div class="k">Step 3 of 5 · Safety briefing</div><h2>Read every slide</h2><p>Swipe through all the safety information. The button below unlocks once you've viewed every slide.</p></div>
+      <div class="step-head"><div class="k">Step 3 of 5 · Safety briefing</div><h2>Read all the information</h2><p>Swipe through all the safety information. The button below unlocks once you've viewed every page.</p></div>
       <div class="slide-stage"><div class="slide-topbar"><i id="slide-fill"></i></div><div id="slides"></div><div class="slide-nav"><button class="snav" id="s-prev" onclick="slidePrev()">‹</button><div class="dots" id="dots"></div><button class="snav" id="s-next" onclick="slideNext()">›</button></div></div>
       <div class="slide-progresstext" id="slide-count"></div>
     </div>
@@ -382,7 +382,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
     </div>
 
     <div class="panel hidden" id="step-4">
-      <div class="step-head"><div class="k">Step 5 of 5 · Check your understanding</div><h2>A few quick questions</h2><p>Based on the slides and video. All answers must be correct to complete your induction.</p></div>
+      <div class="step-head"><div class="k">Step 5 of 5 · Check your understanding</div><h2>A few quick questions</h2><p>Based on the information and video. All answers must be correct to complete your induction.</p></div>
       <div class="card"><div id="quiz"></div><div class="quiz-msg err" id="quiz-err"></div><div class="quiz-msg ok" id="quiz-ok">All correct — submitting your induction…</div></div>
     </div>
 
@@ -478,18 +478,20 @@ const ICONS={
   forklift:'<path d="M3 17h8v-6H3zM11 11V5h3l3 6"/><circle cx="6" cy="19" r="2"/><circle cx="15" cy="19" r="2"/><path d="M17 11v8"/>',
   walk:'<circle cx="13" cy="4" r="1.6"/><path d="M9 20l2-6 3 2 1 4M11 14l-1-5 4 1 2 3"/>',
   exit:'<path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/><path d="M10 17l5-5-5-5M15 12H3"/>',
-  smoke:'<rect x="2" y="14" width="18" height="4" rx="1"/><path d="M18 14v-2a2 2 0 0 0-2-2M22 6c-1 0-2 .8-2 2M22 10c-1 0-2 .8-2 2"/>'
+  smoke:'<rect x="2" y="14" width="18" height="4" rx="1"/><path d="M18 14v-2a2 2 0 0 0-2-2M22 6c-1 0-2 .8-2 2M22 10c-1 0-2 .8-2 2"/>',
+  flower:'<circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="5.5" rx="2.2" ry="3.6"/><ellipse cx="12" cy="18.5" rx="2.2" ry="3.6"/><ellipse cx="5.5" cy="12" rx="3.6" ry="2.2"/><ellipse cx="18.5" cy="12" rx="3.6" ry="2.2"/>'
 };
 const SLIDES=[
   {ico:'gate',color:C.greenDark,title:'Condition of entry',pts:['Sydney Markets conditions of entry are displayed at the 4 main market entrances.','By entering the site you agree to follow all safety directions and signage.'],callout:'Read the entry signage every time you arrive — conditions can change.'},
-  {ico:'vest',color:C.amber,title:'Wear the right gear',pts:['All visitors must wear a hi-vis vest.','Enclosed shoes are required — no thongs or open footwear.','Wear any other PPE relevant to your work on site.'],callout:'No hi-vis, no entry. Safety is everyone\u2019s responsibility.'},
+  {ico:'vest',color:C.amber,title:'Wear the right gear',pts:['All workers and visitors must wear a hi-vis vest.','Enclosed shoes are required — no thongs or open footwear.','Wear any other PPE relevant to your work on site.'],callout:'No hi-vis, no entry. Safety is everyone\u2019s responsibility.'},
   {ico:'forklift',color:C.orange,title:'Forklifts & heavy vehicles',hazard:true,pts:['Never assume a forklift operator can see you.','Never walk in front of a forklift while it is operating.','Stay clear of reversing and turning vehicles.'],callout:'Forklifts move fast and carry heavy loads. Make eye contact before crossing.'},
   {ico:'walk',color:C.green,title:'Use the walkways',pts:['Always walk on the marked pedestrian access ways.','Never take short cuts across roadways or loading areas.'],callout:'The safe path is always the marked path — even if it\u2019s longer.'},
   {ico:'exit',color:C.magenta,title:'Emergency assembly',pts:['Know your nearest emergency assembly point.','In an emergency, follow staff directions and assembly signage.','Do not re-enter the site until you are told it is safe.'],callout:'Assembly plans are displayed across the site — locate yours on arrival.'},
-  {ico:'smoke',color:C.greenDark,title:'Smoking & conduct',pts:['Smoking is only permitted in designated outdoor smoking areas.','Keep walkways and entrances clear at all times.'],callout:'The Sydney Flower Market is open to the public from 6:00am, Monday to Saturday.'}
+  {ico:'smoke',color:C.greenDark,title:'Smoking & conduct',pts:['Smoking is only permitted in designated outdoor smoking areas.','Keep walkways and entrances clear at all times.'],callout:'Dispose of cigarette butts safely — never near produce, packaging or vehicles.'},
+  {ico:'flower',color:C.magenta,title:'Sydney Flower Market',pts:['The Sydney Flower Market is open to the public from 6:00am, Monday to Saturday.','The public are welcome, and the same safety rules apply to everyone on site.'],callout:'Members of the public must also follow all safety directions and signage.'}
 ];
 const QUIZ=[
-  {q:'What must all visitors wear when entering the markets?',opts:['Whatever they arrived in','A hi-vis vest, enclosed shoes and relevant PPE','Only a hi-vis vest, footwear is optional','Nothing specific is required'],correct:1},
+  {q:'What must all workers and visitors wear when entering the markets?',opts:['Whatever they arrived in','A hi-vis vest, enclosed shoes and relevant PPE','Only a hi-vis vest, footwear is optional','Nothing specific is required'],correct:1},
   {q:'You should never walk in front of a…',opts:['Parked truck','Operating forklift','Closed gate','Market stall'],correct:1},
   {q:'Where should you walk on site?',opts:['The shortest route to save time','Across roadways when they look clear','On the marked pedestrian access ways','Wherever staff aren\u2019t looking'],correct:2},
   {q:'What should you assume about a forklift operator?',opts:['They can always see you','They will stop for you','You cannot assume they can see you','They only work after 6am'],correct:2},
@@ -503,7 +505,7 @@ const QUIZ=[
 
 const FAQ=[
   {q:'Who must do the induction?',a:'Anyone entering the operational areas of the Sydney Markets site should complete the safety induction first — this includes traders and their staff, contractors, transport and delivery drivers, and members of the public visiting the retail markets.',flag:'Confirm the exact scope and any exempt groups with WHS.'},
-  {q:'Does everyone on site need to have done it?',a:'The induction is part of how Sydney Markets meets its work health and safety obligations, so all visitors to operational market areas are expected to have a valid induction. Some groups may be covered by separate arrangements (for example, a tenant\u2019s own inducted employees).',flag:'Confirm which groups are covered by separate arrangements.'},
+  {q:'Does everyone on site need to have done it?',a:'The induction is part of how Sydney Markets meets its work health and safety obligations, so all workers and visitors to operational market areas are expected to have a valid induction. Some groups may be covered by separate arrangements (for example, a tenant\u2019s own inducted employees).',flag:'Confirm which groups are covered by separate arrangements.'},
   {q:'How often does someone need to do it?',a:'An induction is valid for 12 months. After that it expires and the person needs to complete it again before re-entering operational areas.',flag:'Renewal period is currently modelled as annual — confirm with WHS.'},
   {q:'If it expires, will Sydney Markets remind me?',a:'The system is being built to automatically email and text a fresh induction link as an induction nears expiry, and again if it lapses — so people can re-do it before they next arrive on site.',flag:'Automated reminders are planned for a later build; confirm timing (e.g. 30 days before expiry).'},
   {q:'What happens if someone isn\u2019t inducted?',a:'A valid induction is a condition of entry to operational areas. Someone without one can be asked to complete it on the spot, or may be refused entry to those areas until they do.',flag:'Confirm enforcement wording with WHS and security.'},
@@ -583,7 +585,7 @@ function stepBack(){if(step>0)showStep(step-1)}
 
 document.addEventListener('input',e=>{if(['f-first','f-last','f-mobile','f-email','f-company'].includes(e.target.id))refreshDetailsGate()});
 function getDetails(){return{first:$('#f-first').value.trim(),last:$('#f-last').value.trim(),mobile:$('#f-mobile').value.trim(),email:$('#f-email').value.trim(),company:$('#f-company').value.trim()}}
-function detailsValid(){const d=getDetails();return d.first&&d.last&&isValidMobile(d.mobile)&&isValidEmail(d.email)}
+function detailsValid(){const d=getDetails();return d.first&&d.last&&isValidMobile(d.mobile)&&isValidEmail(d.email)&&d.company}
 function refreshDetailsGate(){if(step===0)$('#btn-next').disabled=!detailsValid()}
 
 function initPhoto(){applyPhotoUI();startCamera()}
@@ -619,16 +621,16 @@ function onFilePhoto(e){const f=e.target.files&&e.target.files[0];if(!f)return;c
 function refreshPhotoGate(){if(step!==1)return;$('#btn-next').disabled=!photoData;$('#ab-note').textContent=photoData?'Photo captured — you can continue.':'Take or upload a photo to continue.'}
 
 function renderSlides(){
-  $('#slides').innerHTML=SLIDES.map((s,i)=>'<div class="slide '+(s.hazard?'hazard':'')+' '+(i===slideIdx?'on':'')+'" data-i="'+i+'"><div class="slide-head"><span class="slide-num" style="background:'+s.color+'1f;color:'+s.color+'">Slide '+(i+1)+' of '+SLIDES.length+' · Safety briefing</span></div><div class="ico" style="background:'+s.color+'22;color:'+s.color+'"><svg viewBox="0 0 24 24" fill="none" stroke="'+s.color+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICONS[s.ico]+'</svg></div><h3>'+s.title+'</h3><ul class="pts">'+s.pts.map(p=>'<li>'+p+'</li>').join('')+'</ul>'+(s.callout?'<div class="callout">'+s.callout+'</div>':'')+'</div>').join('');
+  $('#slides').innerHTML=SLIDES.map((s,i)=>'<div class="slide '+(s.hazard?'hazard':'')+' '+(i===slideIdx?'on':'')+'" data-i="'+i+'"><div class="slide-head"><span class="slide-num" style="background:'+s.color+'1f;color:'+s.color+'">Information '+(i+1)+' of '+SLIDES.length+' · Safety briefing</span></div><div class="titlerow"><div class="ico" style="background:'+s.color+'22;color:'+s.color+'"><svg viewBox="0 0 24 24" fill="none" stroke="'+s.color+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICONS[s.ico]+'</svg></div><h3>'+s.title+'</h3></div><ul class="pts">'+s.pts.map(p=>'<li>'+p+'</li>').join('')+'</ul>'+(s.callout?'<div class="callout">'+s.callout+'</div>':'')+'</div>').join('');
   $('#dots').innerHTML=SLIDES.map((_,i)=>'<b class="'+(seen.has(i)?'seen':'')+' '+(i===slideIdx?'here':'')+'" onclick="slideGo('+i+')"></b>').join('');
   $('#slide-fill').style.width=((slideIdx+1)/SLIDES.length*100)+'%';
   $('#s-prev').disabled=slideIdx===0;$('#s-next').disabled=slideIdx===SLIDES.length-1;
-  $('#slide-count').textContent=seen.size+' of '+SLIDES.length+' slides viewed';
+  $('#slide-count').textContent=seen.size+' of '+SLIDES.length+' information pages viewed';
 }
 function slideGo(i){slideIdx=Math.max(0,Math.min(SLIDES.length-1,i));seen.add(slideIdx);renderSlides();refreshSlideGate()}
 function slideNext(){if(slideIdx<SLIDES.length-1)slideGo(slideIdx+1)}
 function slidePrev(){if(slideIdx>0)slideGo(slideIdx-1)}
-function refreshSlideGate(){if(step!==2)return;const all=seen.size===SLIDES.length;$('#btn-next').disabled=!all;$('#ab-note').textContent=all?'All slides viewed — you can continue.':'View all slides to continue ('+(SLIDES.length-seen.size)+' left).'}
+function refreshSlideGate(){if(step!==2)return;const all=seen.size===SLIDES.length;$('#btn-next').disabled=!all;$('#ab-note').textContent=all?'All information viewed — you can continue.':'View all information to continue ('+(SLIDES.length-seen.size)+' left).'}
 let tsx=0;
 document.addEventListener('touchstart',e=>{tsx=e.changedTouches[0].clientX},{passive:true});
 document.addEventListener('touchend',e=>{if(step!==2)return;const dx=e.changedTouches[0].clientX-tsx;if(dx<-40)slideNext();if(dx>40)slidePrev()},{passive:true});
@@ -673,7 +675,7 @@ function submitInduction(){
 function fillPass(r){
   const ph=$('#p-photo');
   if(r.photo){ph.src=r.photo;ph.style.display='block'}else{ph.style.display='none'}
-  $('#p-name').textContent=r.first+' '+r.last;$('#p-co').textContent=r.company||'Public visitor';
+  $('#p-name').textContent=r.first+' '+r.last;$('#p-co').textContent=r.company||'Worker / Visitor';
   $('#p-mobile').textContent=fmtMobile(r.mobile);$('#p-date').textContent=fmtDate(r.date);
   $('#p-exp').textContent=fmtDate(expiryOf(r));$('#p-ref').textContent=refOf(r);
   $('#s-email').textContent='Sent to '+r.email;$('#s-sms').textContent='Sent to '+fmtMobile(r.mobile);
@@ -708,7 +710,7 @@ function applyRole(){
   dashTab('lookup');
 }
 function renderFAQ(){$('#faq-list').innerHTML=FAQ.map(f=>'<div class="faq-item"><button class="faq-q" onclick="faqTog(this)">'+f.q+'<span class="pm">+</span></button><div class="faq-a"><div class="inner"><p>'+f.a+(f.flag?'<span class="flag">'+f.flag+'</span>':'')+'</p></div></div></div>').join('')}
-function faqTog(btn){btn.parentElement.classList.toggle('open')}
+function faqTog(btn){const item=btn.parentElement;item.classList.toggle('open');const pm=btn.querySelector('.pm');if(pm)pm.textContent=item.classList.contains('open')?'\u2212':'+';}
 function renderStats(){
   const today=INDUCTEES.filter(r=>(Date.now()-r.date.getTime())<DAY).length;
   const week=INDUCTEES.filter(r=>(Date.now()-r.date.getTime())<7*DAY).length;
@@ -727,11 +729,11 @@ function renderFound(r){
   const expBadge=valid?statusBadge(r):'<span class="badge exp"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="'+C.orange+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg> Expired</span>';
   if(role==='admin'){
     const sc=scoreOf(r);
-    const grid='<div class="res-grid"><div><div class="k">Mobile (ID)</div><div class="v">'+fmtMobile(r.mobile)+'</div></div><div><div class="k">Company</div><div class="v" style="font-size:.9rem">'+(r.company||'Public visitor')+'</div></div><div><div class="k">Completed</div><div class="v">'+fmtDate(r.date)+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+fmtDate(expiryOf(r))+'</div></div><div><div class="k">Score</div><div class="v"><span class="score-pill '+scoreClass(sc)+'">'+sc+'/'+QUIZ.length+'</span></div></div><div><div class="k">Email</div><div class="v" style="font-size:.8rem">'+(r.email||'—')+'</div></div></div><div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-dark" style="padding:12px 20px" onclick="openDetail(\''+digits(r.mobile)+'\')">View full record</button>'+(valid?'':'<button class="btn btn-primary" style="padding:12px 20px" onclick="smsLink(\''+digits(r.mobile)+'\')">Text re-induction link</button>')+'</div>';
-    $('#sec-result').innerHTML='<div class="res-found '+(valid?'':'expired')+'"><div class="res-head"><div class="idblock">'+avatarHTML(r,74,'res-photo')+'<div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'Public visitor')+'</div></div></div>'+expBadge+'</div>'+grid+'</div>';
+    const grid='<div class="res-grid"><div><div class="k">Mobile (ID)</div><div class="v">'+fmtMobile(r.mobile)+'</div></div><div><div class="k">Company</div><div class="v" style="font-size:.9rem">'+(r.company||'Worker / Visitor')+'</div></div><div><div class="k">Completed</div><div class="v">'+fmtDate(r.date)+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+fmtDate(expiryOf(r))+'</div></div><div><div class="k">Score</div><div class="v"><span class="score-pill '+scoreClass(sc)+'">'+sc+'/'+QUIZ.length+'</span></div></div><div><div class="k">Email</div><div class="v" style="font-size:.8rem">'+(r.email||'—')+'</div></div></div><div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-dark" style="padding:12px 20px" onclick="openDetail(\''+digits(r.mobile)+'\')">View full record</button>'+(valid?'':'<button class="btn btn-primary" style="padding:12px 20px" onclick="smsLink(\''+digits(r.mobile)+'\')">Text re-induction link</button>')+'</div>';
+    $('#sec-result').innerHTML='<div class="res-found '+(valid?'':'expired')+'"><div class="res-head"><div class="idblock">'+avatarHTML(r,74,'res-photo')+'<div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'Worker / Visitor')+'</div></div></div>'+expBadge+'</div>'+grid+'</div>';
   }else{
-    const grid='<div class="res-grid"><div><div class="k">Mobile</div><div class="v">'+fmtMobile(r.mobile)+'</div></div><div><div class="k">Company</div><div class="v" style="font-size:.9rem">'+(r.company||'Public visitor')+'</div></div><div><div class="k">Induction</div><div class="v" style="color:'+(valid?C.greenDark:C.orange)+'">'+(valid?'Valid':'Expired')+'</div></div></div>'+(valid?'':'<div style="margin-top:16px"><button class="btn btn-primary" style="padding:12px 20px" onclick="smsLink(\''+digits(r.mobile)+'\')">Text re-induction link</button></div>');
-    $('#sec-result').innerHTML='<div class="res-found '+(valid?'':'expired')+'" style="text-align:center"><div style="display:flex;flex-direction:column;align-items:center;gap:12px">'+avatarHTML(r,104,'verify-photo')+'<div><div class="name" style="font-size:1.6rem">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'Public visitor')+'</div></div>'+expBadge+'</div><div style="text-align:left">'+grid+'</div></div>';
+    const grid='<div class="res-grid"><div><div class="k">Mobile</div><div class="v">'+fmtMobile(r.mobile)+'</div></div><div><div class="k">Company</div><div class="v" style="font-size:.9rem">'+(r.company||'Worker / Visitor')+'</div></div><div><div class="k">Induction</div><div class="v" style="color:'+(valid?C.greenDark:C.orange)+'">'+(valid?'Valid':'Expired')+'</div></div></div>'+(valid?'':'<div style="margin-top:16px"><button class="btn btn-primary" style="padding:12px 20px" onclick="smsLink(\''+digits(r.mobile)+'\')">Text re-induction link</button></div>');
+    $('#sec-result').innerHTML='<div class="res-found '+(valid?'':'expired')+'" style="text-align:center"><div style="display:flex;flex-direction:column;align-items:center;gap:12px">'+avatarHTML(r,104,'verify-photo')+'<div><div class="name" style="font-size:1.6rem">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'Worker / Visitor')+'</div></div>'+expBadge+'</div><div style="text-align:left">'+grid+'</div></div>';
   }
 }
 function renderNotFound(q){
@@ -739,13 +741,13 @@ function renderNotFound(q){
   $('#sec-result').innerHTML='<div class="res-none"><div class="x"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><h3>No induction on record</h3><p>Nobody matching <b>'+q+'</b> has completed the safety induction.</p><div class="acts">'+(isMob?'<button class="btn btn-primary" onclick="smsLink(\''+digits(q)+'\')">Text induction link</button>':'')+'<button class="btn btn-dark" onclick="startOnDevice(\''+digits(q)+'\')">Start induction on this device</button></div></div>';
 }
 function smsLink(mobile){toast('Induction link sent via SMS to '+fmtMobile(mobile))}
-function startOnDevice(mobile){setMode('induction');resetInduction();if(digits(mobile).length>=4)$('#f-mobile').value=fmtMobile(mobile);refreshDetailsGate();toast('Ready — hand the device to the visitor')}
+function startOnDevice(mobile){setMode('induction');resetInduction();if(digits(mobile).length>=4)$('#f-mobile').value=fmtMobile(mobile);refreshDetailsGate();toast('Ready — hand the device to the worker or visitor')}
 
 function openDetail(mobile){
   const r=INDUCTEES.find(x=>digits(x.mobile)===digits(mobile));if(!r)return;
   const sc=scoreOf(r),valid=isValid(r);
   const answers=QUIZ.map((q,i)=>{const given=(r.ans||[])[i];const ok=given===q.correct;return '<div class="ans '+(ok?'ok':'no')+'"><div class="mk">'+(ok?'<svg viewBox="0 0 24 24" fill="none" stroke="'+C.greenDark+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="'+C.orange+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>')+'</div><div><div class="qtxt">'+q.q+'</div><div class="given">First answer: '+(given!=null?q.opts[given]:'—')+(ok?'':' · correct: '+q.opts[q.correct])+'</div></div></div>'}).join('');
-  $('#modal-root').innerHTML='<div class="modal" onclick="if(event.target===this)closeDetail()"><div class="sheet"><div class="sheet-head"><div class="idblock">'+avatarHTML(r,64)+'<div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'Public visitor')+'</div></div></div><button class="close" onclick="closeDetail()">✕</button></div><div class="sheet-body"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+statusBadge(r)+'<span class="score-pill '+scoreClass(sc)+'">First-attempt score '+sc+'/'+QUIZ.length+'</span></div><div class="mini-grid"><div><div class="k">Mobile (ID)</div><div class="v">'+fmtMobile(r.mobile)+'</div></div><div><div class="k">Email</div><div class="v" style="font-size:.85rem">'+(r.email||'—')+'</div></div><div><div class="k">Completed</div><div class="v">'+fmtDate(r.date)+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+fmtDate(expiryOf(r))+'</div></div><div><div class="k">Attempts</div><div class="v">'+(r.attempts||1)+'</div></div><div><div class="k">Reference</div><div class="v">'+refOf(r)+'</div></div></div><div class="ans-h">Question responses (first attempt)</div>'+answers+'</div></div></div>';
+  $('#modal-root').innerHTML='<div class="modal" onclick="if(event.target===this)closeDetail()"><div class="sheet"><div class="sheet-head"><div class="idblock">'+avatarHTML(r,64)+'<div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'Worker / Visitor')+'</div></div></div><button class="close" onclick="closeDetail()">✕</button></div><div class="sheet-body"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+statusBadge(r)+'<span class="score-pill '+scoreClass(sc)+'">First-attempt score '+sc+'/'+QUIZ.length+'</span></div><div class="mini-grid"><div><div class="k">Mobile (ID)</div><div class="v">'+fmtMobile(r.mobile)+'</div></div><div><div class="k">Email</div><div class="v" style="font-size:.85rem">'+(r.email||'—')+'</div></div><div><div class="k">Completed</div><div class="v">'+fmtDate(r.date)+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+fmtDate(expiryOf(r))+'</div></div><div><div class="k">Attempts</div><div class="v">'+(r.attempts||1)+'</div></div><div><div class="k">Reference</div><div class="v">'+refOf(r)+'</div></div></div><div class="ans-h">Question responses (first attempt)</div>'+answers+'</div></div></div>';
 }
 function closeDetail(){$('#modal-root').innerHTML=''}
 
