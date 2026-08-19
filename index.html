@@ -516,16 +516,16 @@ const SLIDES=[
   {ico:'flower',color:C.magenta,title:'Sydney Flower Market',pts:['The Sydney Flower Market is open to the public from 6:00am, Monday to Saturday.','The public are welcome, and the same safety rules apply to everyone on site.'],callout:'Members of the public must also follow all safety directions and signage.'}
 ];
 const QUIZ=[
-  {q:'What must all workers and visitors wear when entering the markets?',opts:['Whatever they arrived in','A hi-vis vest, enclosed shoes and relevant PPE','Only a hi-vis vest, footwear is optional','Nothing specific is required'],correct:1},
-  {q:'You should never walk in front of a…',opts:['Parked truck','Operating forklift','Closed gate','Market stall'],correct:1},
-  {q:'Where should you walk on site?',opts:['The shortest route to save time','Across roadways when they look clear','On the marked pedestrian access ways','Wherever staff aren\u2019t looking'],correct:2},
-  {q:'What should you assume about a forklift operator?',opts:['They can always see you','They will stop for you','You cannot assume they can see you','They only work after 6am'],correct:2},
-  {q:'Where is smoking permitted?',opts:['Anywhere outdoors','In designated outdoor smoking areas only','Inside, away from produce','On the pedestrian walkways'],correct:1},
-  {q:'At how many main entrances are the conditions of entry displayed?',opts:['Two','Four','Six','They are not displayed'],correct:1},
-  {q:'In an emergency, what should you do?',opts:['Keep working until told otherwise','Drive out of the site immediately','Go to the nearest assembly point and follow staff directions','Shelter in the nearest building'],correct:2},
-  {q:'What footwear is required on site?',opts:['Thongs are fine','Open sandals','Enclosed shoes','Any footwear is acceptable'],correct:2},
-  {q:'When can you re-enter the site after an emergency?',opts:['As soon as the alarm stops','Whenever you like','Only when you are told it is safe to do so','After ten minutes'],correct:2},
-  {q:'From what time is the Sydney Flower Market open to the public?',opts:['24 hours a day','6:00am, Monday to Saturday','Weekends only','It is not open to the public'],correct:1}
+  {q:'What must all workers and visitors wear when entering the markets?',opts:['Whatever they arrived in','Only a hi-vis vest, footwear is optional','A hi-vis vest, enclosed shoes and relevant PPE','Nothing specific is required'],correct:2},
+  {q:'You should never walk in front of a…',opts:['Operating forklift','Parked truck','Closed gate','Market stall'],correct:0},
+  {q:'Where should you walk on site?',opts:['The shortest route to save time','Across roadways when they look clear','Wherever staff aren\u2019t looking','On the marked pedestrian access ways'],correct:3},
+  {q:'What should you assume about a forklift operator?',opts:['They can always see you','You cannot assume they can see you','They will stop for you','They only work after 6am'],correct:1},
+  {q:'Where is smoking permitted?',opts:['In designated outdoor smoking areas only','Anywhere outdoors','Inside, away from produce','On the pedestrian walkways'],correct:0},
+  {q:'At how many main entrances are the conditions of entry displayed?',opts:['Two','Six','They are not displayed','Four'],correct:3},
+  {q:'In an emergency, what should you do?',opts:['Keep working until told otherwise','Go to the nearest assembly point and follow staff directions','Drive out of the site immediately','Shelter in the nearest building'],correct:1},
+  {q:'What footwear is required on site?',opts:['Thongs are fine','Open sandals','Any footwear is acceptable','Enclosed shoes'],correct:3},
+  {q:'When can you re-enter the site after an emergency?',opts:['Only when you are told it is safe to do so','As soon as the alarm stops','Whenever you like','After ten minutes'],correct:0},
+  {q:'From what time is the Sydney Flower Market open to the public?',opts:['24 hours a day','Weekends only','6:00am, Monday to Saturday','It is not open to the public'],correct:2}
 ];
 
 const FAQ=[
@@ -543,14 +543,14 @@ const FAQ=[
 const DAY=86400000,VALID_DAYS=365;
 function daysAgo(n){return new Date(Date.now()-n*DAY)}
 let INDUCTEES=[
-  {first:'Linh',last:'Nguyen',mobile:'0423998112',email:'linh@nguyenbros.com.au',company:'Nguyen Bros Wholesale',date:daysAgo(0),attempts:1,ans:[1,1,2,2,1,1,2,2,2,1],photo:null},
-  {first:'Jenny',last:'Le',mobile:'0488934001',email:'jenny.le@gmail.com',company:'',date:daysAgo(1),attempts:1,ans:[1,1,2,2,1,1,2,2,2,1],photo:null},
-  {first:'Mario',last:'Favetta',mobile:'0412345678',email:'mario@favetta.com.au',company:'Favetta Fresh Produce',date:daysAgo(3),attempts:2,ans:[1,0,2,2,1,1,2,2,2,1],photo:null},
-  {first:'Ahmed',last:'Hassan',mobile:'0477221660',email:'ahmed@freshpoint.com.au',company:'Fresh Point Trading',date:daysAgo(6),attempts:1,ans:[1,1,2,2,1,1,2,2,2,1],photo:null},
-  {first:'Con',last:'Stephens',mobile:'0400776231',email:'con@sydneyflower.co',company:'Sydney Flower Co',date:daysAgo(15),attempts:2,ans:[1,1,1,2,1,0,2,2,2,1],photo:null},
-  {first:'Priya',last:'Sharma',mobile:'0432118904',email:'priya.sharma@outlook.com',company:'',date:daysAgo(34),attempts:3,ans:[0,1,2,1,1,1,2,2,0,1],photo:null},
-  {first:'Tomasz',last:'Kowalski',mobile:'0455300121',email:'tom@kowalskilogistics.au',company:'Kowalski Logistics',date:daysAgo(58),attempts:1,ans:[1,1,2,2,1,1,2,2,2,1],photo:null},
-  {first:'Sarah',last:'Bianchi',mobile:'0466512889',email:'sarah@bianchibananas.com.au',company:'Bianchi Bananas',date:daysAgo(402),attempts:2,ans:[1,1,2,2,0,1,2,2,2,0],photo:null}
+  {first:'Linh',last:'Nguyen',mobile:'0423998112',email:'linh@nguyenbros.com.au',company:'Nguyen Bros Wholesale',date:daysAgo(0),attempts:1,ans:[2,0,3,1,0,3,1,3,0,2],photo:null},
+  {first:'Jenny',last:'Le',mobile:'0488934001',email:'jenny.le@gmail.com',company:'',date:daysAgo(1),attempts:1,ans:[2,0,3,1,0,3,1,3,0,2],photo:null},
+  {first:'Mario',last:'Favetta',mobile:'0412345678',email:'mario@favetta.com.au',company:'Favetta Fresh Produce',date:daysAgo(3),attempts:2,ans:[2,1,3,1,0,3,1,3,0,2],photo:null},
+  {first:'Ahmed',last:'Hassan',mobile:'0477221660',email:'ahmed@freshpoint.com.au',company:'Fresh Point Trading',date:daysAgo(6),attempts:1,ans:[2,0,3,1,0,3,1,3,0,2],photo:null},
+  {first:'Con',last:'Stephens',mobile:'0400776231',email:'con@sydneyflower.co',company:'Sydney Flower Co',date:daysAgo(15),attempts:2,ans:[2,0,1,1,0,0,1,3,0,2],photo:null},
+  {first:'Priya',last:'Sharma',mobile:'0432118904',email:'priya.sharma@outlook.com',company:'',date:daysAgo(34),attempts:3,ans:[0,0,3,2,0,3,1,3,1,2],photo:null},
+  {first:'Tomasz',last:'Kowalski',mobile:'0455300121',email:'tom@kowalskilogistics.au',company:'Kowalski Logistics',date:daysAgo(58),attempts:1,ans:[2,0,3,1,0,3,1,3,0,2],photo:null},
+  {first:'Sarah',last:'Bianchi',mobile:'0466512889',email:'sarah@bianchibananas.com.au',company:'Bianchi Bananas',date:daysAgo(402),attempts:2,ans:[2,0,3,1,1,3,1,3,0,0],photo:null}
 ];
 
 const STORE_KEY='sml_inductees_v2';
