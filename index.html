@@ -636,7 +636,8 @@ const SB_KEY='sb_publishable_VWbV-rEt482mj8cZY7BPPQ_IOjIH7Hy';
 const FN=SB_URL+'/functions/v1/';
 const sb=supabase.createClient(SB_URL,SB_KEY);
 let session=null,ADMIN_ROWS=[],lastFound=null;
-function authHeaders(token){return {apikey:SB_KEY,Authorization:'Bearer '+(token||SB_KEY)}}
+function pubHeaders(){return {apikey:SB_KEY}}
+function authHeaders(token){return {apikey:SB_KEY,Authorization:'Bearer '+token}}
 function dataURLtoBlob(u){const p=u.split(',');const mime=(p[0].match(/:(.*?);/)||[])[1]||'image/jpeg';const bin=atob(p[1]);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:mime})}
 function norm(r){const first=r.first_name||r.first||'';const last=r.last_name||r.last||'';const nm=r.name||((first+' '+last).trim());return {id:r.id,indId:r.induction_ref||r.ref||'',first:first||(nm.split(' ')[0]||''),last:last||(nm.split(' ').slice(1).join(' ')||''),name:nm||'',company:r.company||'',type:r.inductee_type||r.type||'',mobile:r.mobile||'',email:r.email||'',score:(r.score!=null?r.score:null),attempts:r.attempts,answers:r.answers,completed_at:r.completed_at,valid_until:r.valid_until,status:r.status||'current',photo:r.photo_url||null,version:r.induction_version||r.version||''}}
 function stInfo(s){if(s==='current')return{label:'Valid',cls:'valid',color:'#30642D'};if(s==='revoked')return{label:'Revoked',cls:'exp',color:'#E73E10'};if(s==='expired')return{label:'Expired',cls:'exp',color:'#E73E10'};return{label:'Not found',cls:'exp',color:'#6f6d63'}}
@@ -785,8 +786,8 @@ async function submitInduction(){
     fd.append('answers',JSON.stringify(firstAnswers));fd.append('attempts',String(quizAttempts));
     fd.append('induction_version',INDUCTION_VERSION);fd.append('content_version',CONTENT_VERSION);fd.append('question_version',QUESTION_VERSION);
     fd.append('privacy_consent','true');fd.append('terms_accepted','true');
-    if(photoData)fd.append('photo',dataURLtoBlob(photoData),'induction.jpg');
-    const res=await fetch(FN+'submit-induction',{method:'POST',headers:authHeaders(),body:fd});
+    if(photoData){const pb=dataURLtoBlob(photoData);const pext=(pb.type==='image/png')?'png':(pb.type==='image/webp'?'webp':'jpg');fd.append('photo',pb,'selfie.'+pext);}
+    const res=await fetch(FN+'submit-induction',{method:'POST',headers:pubHeaders(),body:fd});
     const out=await res.json().catch(()=>({}));
     if(!res.ok||!out.ok)throw new Error(out.error||out.message||('HTTP '+res.status));
     const rec={indId:out.induction_ref,verification_token:out.verification_token,first:d.first,last:d.last,mobile:digits(d.mobile),email:d.email,company:d.company,type:d.type,date:new Date(out.completed_at||Date.now()),validUntil:out.valid_until,status:out.status||'current',photo:photoData};
@@ -890,9 +891,7 @@ async function secSearch(){
     const res=await fetch(FN+'staff-search?q='+encodeURIComponent(q),{headers:authHeaders(session&&session.access_token)});
     if(res.status===401||res.status===403){$('#sec-result').innerHTML='';toast('Session expired — please sign in again');secLogout();return}
     const out=await res.json().catch(()=>null);
-    if(out&&out.status==='not_found'){renderNotFound(q);return}
-    let rows=Array.isArray(out)?out:((out&&Array.isArray(out.results))?out.results:((out&&(out.induction_ref||out.name||out.first_name))?[out]:[]));
-    rows=(rows||[]).filter(Boolean);
+    const rows=(out&&Array.isArray(out.results))?out.results.filter(Boolean):[];
     if(!rows.length){renderNotFound(q);return}
     renderFound(norm(rows[0]));
   }catch(e){$('#sec-result').innerHTML='<div class="res-none"><div class="x"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><h3>Search failed</h3><p>'+((e&&e.message)||'Connection error')+'</p></div>'}
@@ -959,7 +958,7 @@ async function showPublicVerify(token){
   const pv=$('#publicVerify');pv.classList.remove('hidden');
   pv.innerHTML='<div class="pv-wrap"><div class="pv-band"></div><div class="pv-inner"><div class="pv-brand">Sydney Markets · Site Safety Verification</div><div class="pv-loading">Checking induction\u2026</div></div></div>';
   try{
-    const res=await fetch(FN+'verify?token='+encodeURIComponent(token),{headers:authHeaders()});
+    const res=await fetch(FN+'verify?token='+encodeURIComponent(token),{headers:pubHeaders()});
     const out=await res.json().catch(()=>({status:'not_found'}));
     renderPublicVerify(out);
   }catch(e){renderPublicVerify({status:'error',message:(e&&e.message)})}
