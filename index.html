@@ -391,7 +391,26 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
 #sec-table{border-radius:8px}
 #sec-stats .stat{border-radius:8px}
 #sec-table .trow.h{letter-spacing:.03em;color:#5c5a52}
-</style>
+
+    /* public QR verification screen */
+    #publicVerify{min-height:100vh;background:var(--warm,#F4F1EA)}
+    .pv-wrap{max-width:520px;margin:0 auto;background:var(--paper,#fff);min-height:100vh;box-shadow:0 0 60px rgba(0,0,0,.06)}
+    .pv-band{height:8px;background:linear-gradient(90deg,#6BB42C 0 25%,#F9B000 25% 50%,#E60F6E 50% 75%,#E73E10 75% 100%)}
+    .pv-inner{padding:44px 24px 64px;text-align:center;display:flex;flex-direction:column;align-items:center}
+    .pv-brand{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#30642D;margin-bottom:30px}
+    .pv-loading{color:#6f6d63;font-weight:600;padding:60px 0}
+    .pv-photo{width:172px;height:172px;border-radius:22px;object-fit:cover;border:4px solid #e7e3d8;margin-bottom:22px;background:#efece3}
+    .pv-status{font-size:2.7rem;font-weight:900;letter-spacing:-.01em;line-height:1}
+    .pv-status.pv-ok{color:#30642D}
+    .pv-status.pv-bad{color:#E73E10}
+    .pv-status.pv-none{color:#6f6d63}
+    .pv-sub{font-weight:700;color:#020405;margin-top:10px;font-size:1.05rem}
+    .pv-name{font-size:1.85rem;font-weight:900;margin-top:26px;letter-spacing:-.01em;color:#020405}
+    .pv-meta{color:#6f6d63;font-weight:600;margin-top:6px}
+    .pv-vu{margin-top:18px;font-weight:800;color:#30642D}
+    .pv-home{margin-top:44px;color:#6f6d63;font-size:.85rem;font-weight:600;text-decoration:underline}
+    .staff-note{font-size:11px;color:#6f6d63;margin:16px 0 0;font-weight:600;text-align:center}
+  </style>
 </head>
 <body>
 
@@ -521,10 +540,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
       <div class="field" style="text-align:left" data-f="mail"><label>Email</label><input id="sec-email" type="email" placeholder="you@sydneymarkets.com.au" autocomplete="username" onkeydown="if(event.key==='Enter')secLogin()"></div>
       <div class="field" style="text-align:left" data-f="pw"><label>Password</label><input id="sec-pw" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')secLogin()"><div class="err">Incorrect email or password</div></div>
       <button class="btn btn-dark btn-lg" onclick="secLogin()">Sign in</button>
-      <div class="codes">
-        <div class="c v"><span class="lvl">Verify · floor staff</span><span class="code">password: <b>verify2026</b></span></div>
-        <div class="c a"><span class="lvl">Admin · WHS &amp; managers</span><span class="code">password: <b>admin2026</b></span></div>
-      </div>
+      <p class="staff-note">Authorised Sydney Markets staff only.</p>
     </div>
   </div>
 
@@ -550,8 +566,10 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<div id="modal-root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<div id="publicVerify" class="hidden"></div>
+  <div id="modal-root"></div>
 <div id="toast"><span class="dot"></span><span id="toast-msg"></span></div>
 <div class="demo-tag">Prototype · demo data</div>
 
@@ -613,21 +631,15 @@ const QUESTION_VERSION='2026.02';
 const PERSON_TYPES=['Contractor','Driver','Trader / Market participant','Worker / Employee','Visitor','Other'];
 const DAY=86400000,VALID_DAYS=365;
 function daysAgo(n){return new Date(Date.now()-n*DAY)}
-let INDUCTEES=[
-  {indId:'SML-IND-000101',first:'Linh',last:'Nguyen',mobile:'0423998112',email:'linh@nguyenbros.com.au',company:'Nguyen Bros Wholesale',type:'Trader / Market participant',date:daysAgo(0),attempts:1,ans:[0,3,1,2,0,3,1,2,3,0],photo:null,version:INDUCTION_VERSION},
-  {indId:'SML-IND-000102',first:'Jenny',last:'Le',mobile:'0488934001',email:'jenny.le@gmail.com',company:'',type:'Visitor',date:daysAgo(1),attempts:1,ans:[0,3,1,2,0,3,1,2,3,0],photo:null,version:INDUCTION_VERSION},
-  {indId:'SML-IND-000103',first:'Mario',last:'Favetta',mobile:'0412345678',email:'mario@favetta.com.au',company:'Favetta Fresh Produce',type:'Trader / Market participant',date:daysAgo(3),attempts:2,ans:[0,0,1,2,0,3,1,2,3,0],photo:null,version:INDUCTION_VERSION},
-  {indId:'SML-IND-000104',first:'Ahmed',last:'Hassan',mobile:'0477221660',email:'ahmed@freshpoint.com.au',company:'Fresh Point Trading',type:'Trader / Market participant',date:daysAgo(6),attempts:1,ans:[0,3,1,2,0,3,1,2,3,0],photo:null,version:INDUCTION_VERSION},
-  {indId:'SML-IND-000105',first:'Con',last:'Stephens',mobile:'0400776231',email:'con@sydneyflower.co',company:'Sydney Flower Co',type:'Trader / Market participant',date:daysAgo(15),attempts:2,ans:[0,3,2,2,0,0,1,2,3,0],photo:null,version:INDUCTION_VERSION},
-  {indId:'SML-IND-000106',first:'Priya',last:'Sharma',mobile:'0432118904',email:'priya.sharma@outlook.com',company:'',type:'Visitor',date:daysAgo(34),attempts:3,ans:[1,3,1,0,0,3,1,2,1,0],photo:null,version:INDUCTION_VERSION},
-  {indId:'SML-IND-000107',first:'Tomasz',last:'Kowalski',mobile:'0455300121',email:'tom@kowalskilogistics.au',company:'Kowalski Logistics',type:'Driver',date:daysAgo(58),attempts:1,ans:[0,3,1,2,0,3,1,2,3,0],photo:null,version:INDUCTION_VERSION},
-  {indId:'SML-IND-000108',first:'Sarah',last:'Bianchi',mobile:'0466512889',email:'sarah@bianchibananas.com.au',company:'Bianchi Bananas',type:'Trader / Market participant',date:daysAgo(402),attempts:2,ans:[0,3,1,2,1,3,1,2,3,2],photo:null,version:INDUCTION_VERSION}
-];
-
-const STORE_KEY='sml_inductees_v3';
-function loadStored(){try{const raw=localStorage.getItem(STORE_KEY);if(raw){const arr=JSON.parse(raw);if(Array.isArray(arr)&&arr.length)return arr.map(r=>({...r,date:new Date(r.date)}))}}catch(e){}return null}
-function saveStored(){try{localStorage.setItem(STORE_KEY,JSON.stringify(INDUCTEES))}catch(e){}}
-(function initData(){const s=loadStored();if(s)INDUCTEES=s;else saveStored()})();
+const SB_URL='https://wplvpprnvoetwmhfhvfl.supabase.co';
+const SB_KEY='sb_publishable_VWbV-rEt482mj8cZY7BPPQ_IOjIH7Hy';
+const FN=SB_URL+'/functions/v1/';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+let session=null,ADMIN_ROWS=[],lastFound=null;
+function authHeaders(token){return {apikey:SB_KEY,Authorization:'Bearer '+(token||SB_KEY)}}
+function dataURLtoBlob(u){const p=u.split(',');const mime=(p[0].match(/:(.*?);/)||[])[1]||'image/jpeg';const bin=atob(p[1]);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:mime})}
+function norm(r){const first=r.first_name||r.first||'';const last=r.last_name||r.last||'';const nm=r.name||((first+' '+last).trim());return {id:r.id,indId:r.induction_ref||r.ref||'',first:first||(nm.split(' ')[0]||''),last:last||(nm.split(' ').slice(1).join(' ')||''),name:nm||'',company:r.company||'',type:r.inductee_type||r.type||'',mobile:r.mobile||'',email:r.email||'',score:(r.score!=null?r.score:null),attempts:r.attempts,answers:r.answers,completed_at:r.completed_at,valid_until:r.valid_until,status:r.status||'current',photo:r.photo_url||null,version:r.induction_version||r.version||''}}
+function stInfo(s){if(s==='current')return{label:'Valid',cls:'valid',color:'#30642D'};if(s==='revoked')return{label:'Revoked',cls:'exp',color:'#E73E10'};if(s==='expired')return{label:'Expired',cls:'exp',color:'#E73E10'};return{label:'Not found',cls:'exp',color:'#6f6d63'}}
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -640,7 +652,6 @@ function isValidEmail(s){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s||'')}
 function isValid(r){return (Date.now()-r.date.getTime())<VALID_DAYS*DAY}
 function expiryOf(r){return new Date(r.date.getTime()+VALID_DAYS*DAY)}
 function refOf(r){return r.indId||('SML-IND-'+String(parseInt(digits(r.mobile).slice(-6),10)||0).padStart(6,'0'))}
-function nextIndId(){let mx=100;INDUCTEES.forEach(r=>{const n=parseInt(String(r.indId||'').replace(/\D/g,''),10);if(!isNaN(n)&&n>mx)mx=n});return 'SML-IND-'+String(mx+1).padStart(6,'0')}
 function scoreOf(r){return (r.ans||[]).reduce((n,a,i)=>n+(a===QUIZ[i].correct?1:0),0)}
 function scoreClass(s){const t=QUIZ.length,ra=s/t;return ra>=1?'s5':(ra>=0.8?'s4':'slo')}
 function toast(msg){const t=$('#toast');$('#toast-msg').textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3400)}
@@ -756,35 +767,51 @@ function renderQuiz(){
 function chooseQuiz(qi,oi){quizChosen[qi]=oi;$$('.q[data-q="'+qi+'"] .opt').forEach(el=>{el.classList.remove('chosen','wrong','right');if(+el.dataset.opt===oi)el.classList.add('chosen')});refreshQuizGate()}
 function refreshQuizGate(){if(step!==4)return;const answered=Object.keys(quizChosen).length===QUIZ.length;$('#btn-next').disabled=!answered;$('#ab-note').textContent=answered?'All questions answered.':'Answer all questions ('+(QUIZ.length-Object.keys(quizChosen).length)+' left).'}
 
-function submitInduction(){
+async function submitInduction(){
   quizAttempts++;
   if(!firstAnswers)firstAnswers=QUIZ.map((q,i)=>quizChosen[i]);
   let wrong=[];
   QUIZ.forEach((q,i)=>{const els=$$('.q[data-q="'+i+'"] .opt');els.forEach(el=>el.classList.remove('right','wrong'));if(quizChosen[i]!==q.correct){wrong.push(i);if(els[quizChosen[i]])els[quizChosen[i]].classList.add('wrong')}});
   const errBox=$('#quiz-err');
   if(wrong.length){errBox.className='quiz-msg err';errBox.style.display='block';errBox.textContent=wrong.length+' answer'+(wrong.length>1?'s':'')+' incorrect. Review the highlighted question'+(wrong.length>1?'s':'')+' and try again.';QUIZ.forEach((q,i)=>{if(!wrong.includes(i)){const e=$$('.q[data-q="'+i+'"] .opt')[q.correct];if(e)e.classList.add('right')}});window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});return}
-  errBox.style.display='none';$('#quiz-ok').style.display='block';
-  const d=getDetails();
-  const existing=INDUCTEES.find(r=>digits(r.mobile)===digits(d.mobile));
-  const rec={indId:existing?existing.indId:nextIndId(),first:d.first,last:d.last,mobile:digits(d.mobile),email:d.email,company:d.company,type:d.type,date:new Date(),attempts:quizAttempts,ans:firstAnswers.slice(),photo:photoData,version:INDUCTION_VERSION,contentVersion:CONTENT_VERSION,questionVersion:QUESTION_VERSION};
-  const ix=INDUCTEES.findIndex(r=>digits(r.mobile)===rec.mobile);
-  if(ix>=0)INDUCTEES[ix]=rec;else INDUCTEES.unshift(rec);
-  lastRec=rec;saveStored();
-  setTimeout(()=>{$('#quiz-ok').style.display='none';fillPass(rec);showStep(5);toast('Confirmation sent — you\u2019re inducted')},700);
+  errBox.style.display='none';
+  const d=getDetails();const score=firstAnswers.reduce((n,a,i)=>n+(a===QUIZ[i].correct?1:0),0);
+  const nextBtn=$('#btn-next');nextBtn.disabled=true;
+  const ok=$('#quiz-ok');ok.style.display='block';ok.textContent='Submitting your induction\u2026';
+  try{
+    const fd=new FormData();
+    fd.append('first_name',d.first);fd.append('last_name',d.last);fd.append('mobile',digits(d.mobile));fd.append('email',d.email);
+    fd.append('company',d.company);fd.append('inductee_type',d.type);fd.append('score',String(score));
+    fd.append('answers',JSON.stringify(firstAnswers));fd.append('attempts',String(quizAttempts));
+    fd.append('induction_version',INDUCTION_VERSION);fd.append('content_version',CONTENT_VERSION);fd.append('question_version',QUESTION_VERSION);
+    fd.append('privacy_consent','true');fd.append('terms_accepted','true');
+    if(photoData)fd.append('photo',dataURLtoBlob(photoData),'induction.jpg');
+    const res=await fetch(FN+'submit-induction',{method:'POST',headers:authHeaders(),body:fd});
+    const out=await res.json().catch(()=>({}));
+    if(!res.ok||!out.ok)throw new Error(out.error||out.message||('HTTP '+res.status));
+    const rec={indId:out.induction_ref,verification_token:out.verification_token,first:d.first,last:d.last,mobile:digits(d.mobile),email:d.email,company:d.company,type:d.type,date:new Date(out.completed_at||Date.now()),validUntil:out.valid_until,status:out.status||'current',photo:photoData};
+    lastRec=rec;ok.style.display='none';fillPass(rec);showStep(5);toast('Induction submitted');
+  }catch(e){
+    ok.style.display='none';nextBtn.disabled=false;
+    errBox.className='quiz-msg err';errBox.style.display='block';
+    errBox.textContent='We couldn\u2019t submit your induction ('+((e&&e.message)||'connection error')+'). Please check your connection and press Complete induction again.';
+    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+  }
 }
 function fillPass(r){
   const ph=$('#p-photo');if(r.photo){ph.src=r.photo;ph.style.display='block'}else{ph.style.display='none'}
   $('#p-name').textContent=r.first+' '+r.last;
   $('#p-co').textContent=r.company||'—';
   $('#p-type').textContent=r.type||'';
-  const valid=isValid(r);const st=$('#p-status');st.textContent=valid?'Current':'Expired';st.classList.toggle('expired',!valid);
+  const st=$('#p-status');const isCur=(!r.status||r.status==='current');st.textContent=isCur?'Current':stInfo(r.status).label;st.classList.toggle('expired',!isCur);
   $('#p-mobile').textContent=fmtMobile(r.mobile);
-  $('#p-date').textContent=fmtDateTime(r.date);
-  $('#p-exp').textContent=fmtDate(expiryOf(r));
-  $('#p-ref').textContent=refOf(r);
+  $('#p-date').textContent=r.date?fmtDateTime(r.date):'—';
+  $('#p-exp').textContent=r.validUntil?fmtDate(new Date(r.validUntil)):'—';
+  $('#p-ref').textContent=r.indId||'—';
   $('#s-email').textContent='Sent to '+r.email;$('#s-sms').textContent='Sent to '+fmtMobile(r.mobile);
   const qr=$('#p-qr');qr.innerHTML='';
-  try{if(window.QRCode){new QRCode(qr,{text:'https://www.sml-inductions.app/verify?ref='+encodeURIComponent(r.indId||refOf(r)),width:104,height:104,colorDark:'#020405',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M})}else{$('#p-qr-note').textContent='Induction reference: '+refOf(r)}}catch(e){}
+  const vurl='https://www.sml-inductions.app/?verify='+encodeURIComponent(r.verification_token||'');
+  try{if(window.QRCode&&r.verification_token){new QRCode(qr,{text:vurl,width:104,height:104,colorDark:'#020405',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M})}else{$('#p-qr-note').textContent='Induction reference: '+(r.indId||'')}}catch(e){}
 }
 function resetInduction(){step=0;slideIdx=0;seen=new Set([0]);videoWatched=false;quizChosen={};quizAttempts=0;firstAnswers=null;photoData=null;chosenType=null;renderPtypeChips();stopCamera();['f-first','f-last','f-mobile','f-email','f-company'].forEach(id=>$('#'+id).value='');if(player&&player.stopVideo)try{player.stopVideo()}catch(e){}$('#vbar-fill').style.width='0';$('#vbar-pct').textContent='Not started';$('#vbar-pct').className='vlocked';revealFlow();showStep(0)}
 function finishToHome(){resetInduction();showWelcome()}
@@ -792,7 +819,7 @@ function finishToHome(){resetInduction();showWelcome()}
 function addToWallet(){toast('Wallet pass ready to wire up — Apple Wallet & Google Wallet in the next build')}
 async function sharePass(){
   const r=lastRec;if(!r)return;
-  const text='Sydney Markets Safety Induction — '+r.first+' '+r.last+'. Valid until '+fmtDate(expiryOf(r))+'. Ref '+refOf(r)+'.';
+  const text='Sydney Markets Safety Induction — '+r.first+' '+r.last+'. Valid until '+(r.validUntil?fmtDate(new Date(r.validUntil)):'this date next year')+'. Ref '+(r.indId||'')+'.';
   if(navigator.share){try{await navigator.share({title:'My Sydney Markets Induction',text:text,url:location.href});return}catch(e){if(e&&e.name==='AbortError')return}}
   try{await navigator.clipboard.writeText(text+' '+location.href);toast('Copied — paste it anywhere to share')}catch(e){toast('Sharing isn\u2019t available on this device')}
 }
@@ -805,13 +832,24 @@ function selectPtype(t){chosenType=t;renderPtypeChips();refreshDetailsGate()}
 function setMode(m){if(m!=='induction')stopCamera();$('#mode-ind').classList.toggle('on',m==='induction');$('#mode-sec').classList.toggle('on',m==='security');$('#inductionView').classList.toggle('hidden',m!=='induction');$('#securityView').classList.toggle('hidden',m!=='security');window.scrollTo({top:0})}
 
 let role=null;
-function secLogin(){
-  const email=$('#sec-email').value.trim();const pw=$('#sec-pw').value.trim().toLowerCase();const fld=$('#sec-login [data-f="pw"]');
-  if(email&&pw==='admin2026')role='admin';else if(email&&pw==='verify2026')role='verify';else{fld.classList.add('show-err');return}
-  fld.classList.remove('show-err');$('#sec-login').classList.add('hidden');$('#sec-dash').classList.remove('hidden');
-  renderFAQ();applyRole();$('#sec-result').innerHTML='';$('#sec-q').value='';
+async function secLogin(){
+  const email=$('#sec-email').value.trim();const pw=$('#sec-pw').value;const fld=$('#sec-login [data-f="pw"]');const errEl=fld.querySelector('.err');
+  if(!email||!pw){fld.classList.add('show-err');if(errEl)errEl.textContent='Enter your email and password';return}
+  fld.classList.remove('show-err');
+  const btn=$('#sec-login .btn-dark');if(btn){btn.disabled=true;btn.textContent='Signing in\u2026'}
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email:email,password:pw});
+    if(error||!data||!data.session)throw new Error('Incorrect email or password');
+    session=data.session;
+    const sr=await sb.from('staff').select('role').eq('user_id',data.user.id).single();
+    role=(sr&&sr.data&&sr.data.role)?sr.data.role:null;
+    if(role!=='admin'&&role!=='verify'){await sb.auth.signOut();session=null;throw new Error('This account is not authorised for staff access')}
+    $('#sec-login').classList.add('hidden');$('#sec-dash').classList.remove('hidden');
+    renderFAQ();applyRole();$('#sec-result').innerHTML='';$('#sec-q').value='';
+  }catch(e){fld.classList.add('show-err');if(errEl)errEl.textContent=(e&&e.message)||'Sign in failed';}
+  finally{if(btn){btn.disabled=false;btn.textContent='Sign in'}}
 }
-function secLogout(){role=null;$('#sec-dash').classList.add('hidden');$('#sec-login').classList.remove('hidden');$('#sec-pw').value='';$('#sec-email').value=''}
+async function secLogout(){try{await sb.auth.signOut()}catch(e){}session=null;role=null;$('#sec-dash').classList.add('hidden');$('#sec-login').classList.remove('hidden');$('#sec-pw').value='';$('#sec-email').value=''}
 function dashTab(t){$('#tab-lookup').classList.toggle('on',t==='lookup');$('#tab-faq').classList.toggle('on',t==='faq');$('#pane-lookup').classList.toggle('hidden',t!=='lookup');$('#pane-faq').classList.toggle('hidden',t!=='faq')}
 function applyRole(){
   const admin=role==='admin';
@@ -823,58 +861,125 @@ function applyRole(){
 }
 function renderFAQ(){$('#faq-list').innerHTML=FAQ.map(f=>'<div class="faq-item"><button class="faq-q" onclick="faqTog(this)">'+f.q+'<span class="pm">+</span></button><div class="faq-a"><div class="inner"><p>'+f.a+(f.flag?'<span class="flag">'+f.flag+'</span>':'')+'</p></div></div></div>').join('')}
 function faqTog(btn){const item=btn.parentElement;item.classList.toggle('open');const pm=btn.querySelector('.pm');if(pm)pm.textContent=item.classList.contains('open')?'\u2212':'+';}
-function renderStats(){
-  const today=INDUCTEES.filter(r=>(Date.now()-r.date.getTime())<DAY).length;
-  const week=INDUCTEES.filter(r=>(Date.now()-r.date.getTime())<7*DAY).length;
-  const valid=INDUCTEES.filter(isValid).length;
-  $('#sec-stats').innerHTML='<div class="stat g"><div class="n">'+valid+'</div><div class="l">Valid inductions</div></div><div class="stat m"><div class="n">'+today+'</div><div class="l">Completed today</div></div><div class="stat a"><div class="n">'+week+'</div><div class="l">This week</div></div>';
+async function renderStats(){
+  $('#sec-stats').innerHTML='<div class="stat g"><div class="n">\u2026</div><div class="l">Valid inductions</div></div><div class="stat m"><div class="n">\u2026</div><div class="l">Completed today</div></div><div class="stat a"><div class="n">\u2026</div><div class="l">This week</div></div>';
+  try{
+    const sd=new Date();sd.setHours(0,0,0,0);const wk=new Date(Date.now()-7*86400000);
+    const r1=await sb.from('latest_inductions').select('*',{count:'exact',head:true}).eq('status','current');
+    const r2=await sb.from('inductions').select('*',{count:'exact',head:true}).gte('completed_at',sd.toISOString());
+    const r3=await sb.from('inductions').select('*',{count:'exact',head:true}).gte('completed_at',wk.toISOString());
+    $('#sec-stats').innerHTML='<div class="stat g"><div class="n">'+(r1.count||0)+'</div><div class="l">Valid inductions</div></div><div class="stat m"><div class="n">'+(r2.count||0)+'</div><div class="l">Completed today</div></div><div class="stat a"><div class="n">'+(r3.count||0)+'</div><div class="l">This week</div></div>';
+  }catch(e){$('#sec-stats').innerHTML='<div class="stat g"><div class="n">—</div><div class="l">Stats unavailable</div></div>'}
 }
 function statusBadge(r){return isValid(r)?'<span class="badge valid"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#30642D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Valid</span>':'<span class="badge exp">Expired</span>'}
-function renderTable(){
-  const rows=[...INDUCTEES].sort((a,b)=>b.date-a.date);
-  $('#sec-table').innerHTML='<div class="trow h"><div>Name</div><div>Mobile</div><div class="co-c">Company</div><div>Score</div><div class="dt-c">Completed</div><div></div></div>'+rows.map(r=>{const sc=scoreOf(r);return '<div class="trow"><div class="nmcell">'+avatarHTML(r,38)+'<div class="nm">'+r.first+' '+r.last+'<div class="st" style="margin-top:4px">'+statusBadge(r)+'</div></div></div><div class="mob">'+fmtMobile(r.mobile)+'</div><div class="co-c" style="color:var(--muted);font-weight:600">'+(r.company||'—')+'</div><div><span class="score-pill '+scoreClass(sc)+'">'+sc+'/'+QUIZ.length+'</span></div><div class="dt-c" style="font-weight:600">'+fmtDate(r.date)+'</div><div><button class="view" onclick="openDetail(\''+digits(r.mobile)+'\')">View</button></div></div>'}).join('');
+async function renderTable(){
+  $('#sec-table').innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-weight:600">Loading records\u2026</div>';
+  try{
+    const {data,error}=await sb.from('latest_inductions').select('*').order('completed_at',{ascending:false}).limit(500);
+    if(error)throw error;
+    ADMIN_ROWS=(data||[]).map(norm);
+    if(!ADMIN_ROWS.length){$('#sec-table').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-weight:600">No inductions recorded yet.</div>';return}
+    $('#sec-table').innerHTML='<div class="trow h"><div>Name</div><div>Mobile</div><div class="co-c">Company</div><div>Score</div><div class="dt-c">Completed</div><div></div></div>'+ADMIN_ROWS.map((r,i)=>{const sc=(r.score!=null?r.score:null);const si=stInfo(r.status);return '<div class="trow"><div class="nmcell">'+avatarHTML(r,38)+'<div class="nm">'+r.first+' '+r.last+'<div class="st" style="margin-top:4px"><span class="badge '+si.cls+'">'+si.label+'</span></div></div></div><div class="mob">'+(r.mobile?fmtMobile(r.mobile):'—')+'</div><div class="co-c" style="color:var(--muted);font-weight:600">'+(r.company||'—')+'</div><div>'+(sc!=null?'<span class="score-pill '+scoreClass(sc)+'">'+sc+'/'+QUIZ.length+'</span>':'—')+'</div><div class="dt-c" style="font-weight:600">'+(r.completed_at?fmtDate(new Date(r.completed_at)):'—')+'</div><div><button class="view" onclick="openDetailRow('+i+')">View</button></div></div>'}).join('');
+  }catch(e){$('#sec-table').innerHTML='<div style="padding:20px;text-align:center;color:var(--orange);font-weight:600">Could not load records: '+((e&&e.message)||'error')+'</div>'}
 }
-function findRec(q){const dq=digits(q);if(dq.length===10){const m=INDUCTEES.find(r=>digits(r.mobile)===dq||digits(r.mobile).endsWith(dq));if(m)return m}const idq=q.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');if(idq.length>=5){const m=INDUCTEES.find(r=>{const id=(r.indId||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return id&&(id===idq||id.endsWith(idq))});if(m)return m}if(dq.length>=4){const m=INDUCTEES.find(r=>digits(r.mobile)===dq||digits(r.mobile).endsWith(dq));if(m)return m}const nq=q.trim().toLowerCase();if(nq)return INDUCTEES.find(r=>(r.first+' '+r.last).toLowerCase().includes(nq));return null}
-function secSearch(){const q=$('#sec-q').value.trim();if(!q){$('#sec-result').innerHTML='';return}const r=findRec(q);if(r)renderFound(r);else renderNotFound(q)}
+function openDetailRow(i){openDetail(ADMIN_ROWS[i])}
+async function secSearch(){
+  const q=$('#sec-q').value.trim();if(!q){$('#sec-result').innerHTML='';return}
+  $('#sec-result').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-weight:600">Searching\u2026</div>';
+  try{
+    const res=await fetch(FN+'staff-search?q='+encodeURIComponent(q),{headers:authHeaders(session&&session.access_token)});
+    if(res.status===401||res.status===403){$('#sec-result').innerHTML='';toast('Session expired — please sign in again');secLogout();return}
+    const out=await res.json().catch(()=>null);
+    if(out&&out.status==='not_found'){renderNotFound(q);return}
+    let rows=Array.isArray(out)?out:((out&&Array.isArray(out.results))?out.results:((out&&(out.induction_ref||out.name||out.first_name))?[out]:[]));
+    rows=(rows||[]).filter(Boolean);
+    if(!rows.length){renderNotFound(q);return}
+    renderFound(norm(rows[0]));
+  }catch(e){$('#sec-result').innerHTML='<div class="res-none"><div class="x"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><h3>Search failed</h3><p>'+((e&&e.message)||'Connection error')+'</p></div>'}
+}
 function renderFound(r){
-  const valid=isValid(r);
-  const expBadge=valid?statusBadge(r):'<span class="badge exp"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="'+C.orange+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg> Expired</span>';
+  lastFound=r;
+  const si=stInfo(r.status);const valid=r.status==='current';
+  const vu=r.valid_until?fmtDate(new Date(r.valid_until)):'—';const cd=r.completed_at?fmtDate(new Date(r.completed_at)):'—';
+  const badge='<span class="badge '+si.cls+'">'+(si.cls==='valid'?'<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#30642D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> ':'')+si.label+'</span>';
   if(role==='admin'){
-    const sc=scoreOf(r);
-    const grid='<div class="res-grid"><div><div class="k">Mobile (ID)</div><div class="v">'+fmtMobile(r.mobile)+'</div></div><div><div class="k">Company</div><div class="v" style="font-size:.9rem">'+(r.company||'Worker / Visitor')+'</div></div><div><div class="k">Completed</div><div class="v">'+fmtDateTime(r.date)+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+fmtDate(expiryOf(r))+'</div></div><div><div class="k">Score</div><div class="v"><span class="score-pill '+scoreClass(sc)+'">'+sc+'/'+QUIZ.length+'</span></div></div><div><div class="k">Email</div><div class="v" style="font-size:.8rem">'+(r.email||'—')+'</div></div><div><div class="k">Inductee type</div><div class="v" style="font-size:.85rem">'+(r.type||'—')+'</div></div><div><div class="k">Induction ref</div><div class="v" style="font-size:.85rem">'+refOf(r)+'</div></div></div><div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-dark" style="padding:12px 20px" onclick="openDetail(\''+digits(r.mobile)+'\')">View full record</button>'+(valid?'':'<button class="btn btn-primary" style="padding:12px 20px" onclick="smsLink(\''+digits(r.mobile)+'\')">Text re-induction link</button>')+'</div>';
-    $('#sec-result').innerHTML='<div class="res-found '+(valid?'':'expired')+'"><div class="res-head"><div class="idblock">'+avatarHTML(r,74,'res-photo')+'<div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'Worker / Visitor')+'</div></div></div>'+expBadge+'</div>'+grid+'</div>';
+    const sc=(r.score!=null?r.score:null);
+    const grid='<div class="res-grid"><div><div class="k">Mobile</div><div class="v">'+(r.mobile?fmtMobile(r.mobile):'—')+'</div></div><div><div class="k">Company</div><div class="v" style="font-size:.9rem">'+(r.company||'—')+'</div></div><div><div class="k">Completed</div><div class="v">'+cd+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+vu+'</div></div><div><div class="k">Score</div><div class="v">'+(sc!=null?'<span class="score-pill '+scoreClass(sc)+'">'+sc+'/'+QUIZ.length+'</span>':'—')+'</div></div><div><div class="k">Email</div><div class="v" style="font-size:.8rem">'+(r.email||'—')+'</div></div><div><div class="k">Inductee type</div><div class="v" style="font-size:.85rem">'+(r.type||'—')+'</div></div><div><div class="k">Induction ref</div><div class="v" style="font-size:.85rem">'+(r.indId||'—')+'</div></div></div><div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-dark" style="padding:12px 20px" onclick="openDetailCur()">View full record</button>'+((r.id&&valid)?'<button class="btn btn-ghost" style="padding:12px 20px;border-color:'+C.orange+';color:'+C.orange+'" onclick="revokeInduction(\''+r.id+'\')">Revoke induction</button>':'')+'</div>';
+    $('#sec-result').innerHTML='<div class="res-found '+(valid?'':'expired')+'"><div class="res-head"><div class="idblock">'+avatarHTML(r,74,'res-photo')+'<div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'—')+'</div></div></div>'+badge+'</div>'+grid+'</div>';
   }else{
-    const grid='<div class="res-grid"><div><div class="k">Mobile</div><div class="v">'+fmtMobile(r.mobile)+'</div></div><div><div class="k">Company</div><div class="v" style="font-size:.9rem">'+(r.company||'Worker / Visitor')+'</div></div><div><div class="k">Induction</div><div class="v" style="color:'+(valid?C.greenDark:C.orange)+'">'+(valid?'Valid':'Expired')+'</div></div><div><div class="k">Completed</div><div class="v" style="font-size:.9rem">'+fmtDate(r.date)+'</div></div><div><div class="k">Inductee type</div><div class="v" style="font-size:.9rem">'+(r.type||'—')+'</div></div><div><div class="k">Induction ref</div><div class="v" style="font-size:.9rem">'+refOf(r)+'</div></div></div>'+(valid?'':'<div style="margin-top:16px"><button class="btn btn-primary" style="padding:12px 20px" onclick="smsLink(\''+digits(r.mobile)+'\')">Text re-induction link</button></div>');
-    $('#sec-result').innerHTML='<div class="res-found '+(valid?'':'expired')+'" style="text-align:center"><div style="display:flex;flex-direction:column;align-items:center;gap:12px">'+avatarHTML(r,150,'verify-photo')+'<div><div class="name" style="font-size:1.6rem">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'Worker / Visitor')+'</div></div>'+expBadge+'</div><div style="text-align:left">'+grid+'</div></div>';
+    const grid='<div class="res-grid"><div><div class="k">Company</div><div class="v" style="font-size:.9rem">'+(r.company||'—')+'</div></div><div><div class="k">Induction</div><div class="v" style="color:'+si.color+'">'+si.label+'</div></div><div><div class="k">Completed</div><div class="v" style="font-size:.9rem">'+cd+'</div></div><div><div class="k">Valid until</div><div class="v" style="font-size:.9rem;color:'+(valid?'inherit':C.orange)+'">'+vu+'</div></div><div><div class="k">Inductee type</div><div class="v" style="font-size:.9rem">'+(r.type||'—')+'</div></div><div><div class="k">Induction ref</div><div class="v" style="font-size:.9rem">'+(r.indId||'—')+'</div></div></div>';
+    $('#sec-result').innerHTML='<div class="res-found '+(valid?'':'expired')+'" style="text-align:center"><div style="display:flex;flex-direction:column;align-items:center;gap:12px">'+avatarHTML(r,150,'verify-photo')+'<div><div class="name" style="font-size:1.6rem">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'—')+'</div></div>'+badge+'</div><div style="text-align:left">'+grid+'</div></div>';
   }
 }
+function openDetailCur(){openDetail(lastFound)}
 function renderNotFound(q){
-  const isMob=isValidMobile(q);
-  $('#sec-result').innerHTML='<div class="res-none"><div class="x"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><h3>No induction on record</h3><p>Nobody matching <b>'+q+'</b> has completed the safety induction.</p><div class="acts">'+(isMob?'<button class="btn btn-primary" onclick="smsLink(\''+digits(q)+'\')">Text induction link</button>':'')+'<button class="btn btn-dark" onclick="startOnDevice(\''+digits(q)+'\')">Start induction on this device</button></div></div>';
+  $('#sec-result').innerHTML='<div class="res-none"><div class="x"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><h3>No current induction on record</h3><p>Nobody matching <b>'+q+'</b> has a current induction.</p><div class="acts"><button class="btn btn-dark" onclick="startOnDevice(\''+digits(q)+'\')">Start induction on this device</button></div></div>';
 }
-function smsLink(mobile){toast('Induction link sent via SMS to '+fmtMobile(mobile))}
 function startOnDevice(mobile){setMode('induction');resetInduction();if(digits(mobile).length>=4)$('#f-mobile').value=fmtMobile(mobile);refreshDetailsGate();toast('Ready — hand the device to the worker or visitor')}
 
-function openDetail(mobile){
-  const r=INDUCTEES.find(x=>digits(x.mobile)===digits(mobile));if(!r)return;
-  const sc=scoreOf(r),valid=isValid(r);
-  const answers=QUIZ.map((q,i)=>{const given=(r.ans||[])[i];const ok=given===q.correct;return '<div class="ans '+(ok?'ok':'no')+'"><div class="mk">'+(ok?'<svg viewBox="0 0 24 24" fill="none" stroke="'+C.greenDark+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="'+C.orange+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>')+'</div><div><div class="qtxt">'+q.q+'</div><div class="given">First answer: '+(given!=null?q.opts[given]:'—')+(ok?'':' · correct: '+q.opts[q.correct])+'</div></div></div>'}).join('');
-  $('#modal-root').innerHTML='<div class="modal" onclick="if(event.target===this)closeDetail()"><div class="sheet"><div class="sheet-head"><div class="idblock">'+avatarHTML(r,64)+'<div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'Worker / Visitor')+'</div></div></div><button class="close" onclick="closeDetail()">✕</button></div><div class="sheet-body"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+statusBadge(r)+'<span class="score-pill '+scoreClass(sc)+'">First-attempt score '+sc+'/'+QUIZ.length+'</span></div><div class="mini-grid"><div><div class="k">Mobile (ID)</div><div class="v">'+fmtMobile(r.mobile)+'</div></div><div><div class="k">Email</div><div class="v" style="font-size:.85rem">'+(r.email||'—')+'</div></div><div><div class="k">Inductee type</div><div class="v" style="font-size:.85rem">'+(r.type||'—')+'</div></div><div><div class="k">Completed</div><div class="v">'+fmtDateTime(r.date)+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+fmtDate(expiryOf(r))+'</div></div><div><div class="k">Attempts</div><div class="v">'+(r.attempts||1)+'</div></div><div><div class="k">Reference</div><div class="v">'+refOf(r)+'</div></div><div><div class="k">Version</div><div class="v" style="font-size:.78rem">'+(r.version||'—')+'</div></div></div><div class="ans-h">Question responses (first attempt)</div>'+answers+'</div></div></div>';
+function openDetail(r){
+  if(!r)return;
+  const sc=(r.score!=null?r.score:null);const ans=r.answers||[];const valid=r.status==='current';const si=stInfo(r.status);
+  const cd=r.completed_at?fmtDateTime(new Date(r.completed_at)):'—';const vu=r.valid_until?fmtDate(new Date(r.valid_until)):'—';
+  const answers=(ans&&ans.length)?QUIZ.map((q,i)=>{const given=ans[i];const ok=given===q.correct;return '<div class="ans '+(ok?'ok':'no')+'"><div class="mk">'+(ok?'<svg viewBox="0 0 24 24" fill="none" stroke="'+C.greenDark+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="'+C.orange+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>')+'</div><div><div class="qtxt">'+q.q+'</div><div class="given">First answer: '+(given!=null?q.opts[given]:'—')+(ok?'':' · correct: '+q.opts[q.correct])+'</div></div></div>'}).join(''):'';
+  const scoreChip=(sc!=null)?'<span class="score-pill '+scoreClass(sc)+'">First-attempt score '+sc+'/'+QUIZ.length+'</span>':'';
+  const revBtn=(r.id&&valid)?'<div style="margin-top:18px"><button class="btn btn-ghost" style="border-color:'+C.orange+';color:'+C.orange+'" onclick="revokeInduction(\''+r.id+'\')">Revoke induction</button></div>':'';
+  $('#modal-root').innerHTML='<div class="modal" onclick="if(event.target===this)closeDetail()"><div class="sheet"><div class="sheet-head"><div class="idblock">'+avatarHTML(r,64)+'<div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'—')+'</div></div></div><button class="close" onclick="closeDetail()">✕</button></div><div class="sheet-body"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="badge '+si.cls+'">'+si.label+'</span>'+scoreChip+'</div><div class="mini-grid"><div><div class="k">Mobile</div><div class="v">'+(r.mobile?fmtMobile(r.mobile):'—')+'</div></div><div><div class="k">Email</div><div class="v" style="font-size:.85rem">'+(r.email||'—')+'</div></div><div><div class="k">Inductee type</div><div class="v" style="font-size:.85rem">'+(r.type||'—')+'</div></div><div><div class="k">Completed</div><div class="v">'+cd+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+vu+'</div></div><div><div class="k">Attempts</div><div class="v">'+(r.attempts||1)+'</div></div><div><div class="k">Reference</div><div class="v">'+(r.indId||'—')+'</div></div><div><div class="k">Version</div><div class="v" style="font-size:.78rem">'+(r.version||'—')+'</div></div></div>'+((ans&&ans.length)?('<div class="ans-h">Question responses (first attempt)</div>'+answers):'')+revBtn+'</div></div></div>';
 }
 function closeDetail(){$('#modal-root').innerHTML=''}
 
-function exportCSV(){
-  const head=['Induction ref','First name','Last name','Mobile','Email','Company','Inductee type','Completed','Valid until','Status','Score','Attempts','Induction version'];
-  const rows=[...INDUCTEES].sort((a,b)=>b.date-a.date).map(r=>[refOf(r),r.first,r.last,fmtMobile(r.mobile),r.email,r.company||'',r.type||'',fmtDateTime(r.date),fmtDate(expiryOf(r)),isValid(r)?'Valid':'Expired',scoreOf(r)+'/'+QUIZ.length,r.attempts||1,r.version||'']);
-  const csv=[head,...rows].map(row=>row.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const blob=new Blob([csv],{type:'text/csv'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-  a.href=url;a.download='sml-inductees-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
-  toast('Inductee list exported to CSV');
+async function exportCSV(){
+  try{
+    const {data,error}=await sb.from('latest_inductions').select('*').order('completed_at',{ascending:false});
+    if(error)throw error;
+    const rows=(data||[]).map(norm);
+    const head=['Induction ref','First name','Last name','Mobile','Email','Company','Inductee type','Completed','Valid until','Status','Score','Attempts','Induction version'];
+    const body=rows.map(r=>[r.indId,r.first,r.last,r.mobile?fmtMobile(r.mobile):'',r.email||'',r.company||'',r.type||'',r.completed_at?fmtDateTime(new Date(r.completed_at)):'',r.valid_until?fmtDate(new Date(r.valid_until)):'',stInfo(r.status).label,(r.score!=null?r.score+'/'+QUIZ.length:''),r.attempts||'',r.version||'']);
+    const csv=[head].concat(body).map(row=>row.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+    const blob=new Blob([csv],{type:'text/csv'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download='sml-inductees-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
+    toast('Inductee list exported to CSV');
+  }catch(e){toast('Export failed: '+((e&&e.message)||'error'))}
 }
-
+async function revokeInduction(id){
+  if(!id)return;
+  if(!window.confirm('Revoke this induction? It stays on record but is marked as revoked.'))return;
+  try{
+    const res=await fetch(FN+'revoke-induction',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},authHeaders(session&&session.access_token)),body:JSON.stringify({id:id})});
+    const out=await res.json().catch(()=>({}));
+    if(!res.ok||out.error)throw new Error(out.error||('HTTP '+res.status));
+    toast('Induction revoked');closeDetail();
+    if(role==='admin')renderTable();
+    if($('#sec-q').value.trim())secSearch();
+  }catch(e){toast('Revoke failed: '+((e&&e.message)||'error'))}
+}
+async function showPublicVerify(token){
+  const tb=document.querySelector('.topbar');if(tb)tb.style.display='none';
+  $('#inductionView').classList.add('hidden');$('#securityView').classList.add('hidden');
+  const pv=$('#publicVerify');pv.classList.remove('hidden');
+  pv.innerHTML='<div class="pv-wrap"><div class="pv-band"></div><div class="pv-inner"><div class="pv-brand">Sydney Markets · Site Safety Verification</div><div class="pv-loading">Checking induction\u2026</div></div></div>';
+  try{
+    const res=await fetch(FN+'verify?token='+encodeURIComponent(token),{headers:authHeaders()});
+    const out=await res.json().catch(()=>({status:'not_found'}));
+    renderPublicVerify(out);
+  }catch(e){renderPublicVerify({status:'error',message:(e&&e.message)})}
+}
+function renderPublicVerify(d){
+  const pv=$('#publicVerify');const s=(d&&d.status)||'not_found';
+  const map={current:{t:'CURRENT',sub:'Induction valid',cls:'pv-ok'},expired:{t:'EXPIRED',sub:'Induction has expired',cls:'pv-bad'},revoked:{t:'REVOKED',sub:'Induction revoked',cls:'pv-bad'},not_found:{t:'NOT FOUND',sub:'No induction on record',cls:'pv-none'},error:{t:'UNABLE TO VERIFY',sub:(d&&d.message)||'Please try again',cls:'pv-none'}};
+  const m=map[s]||map.not_found;const has=(s==='current'||s==='expired'||s==='revoked');
+  const photo=(d&&d.photo_url)?'<img class="pv-photo" src="'+d.photo_url+'" alt="">':'';
+  const name=has?(((d.first_name||'')+' '+(d.last_name||'')).trim()):'';
+  const meta=has?((d.company||'')+((d.inductee_type)?(' · '+d.inductee_type):'')):'';
+  const vu=(has&&d.valid_until)?('Valid until '+fmtDate(new Date(d.valid_until))):'';
+  pv.innerHTML='<div class="pv-wrap"><div class="pv-band"></div><div class="pv-inner"><div class="pv-brand">Sydney Markets · Site Safety Verification</div>'+photo+'<div class="pv-status '+m.cls+'">'+m.t+'</div><div class="pv-sub">'+m.sub+'</div>'+(has?('<div class="pv-name">'+name+'</div><div class="pv-meta">'+meta+'</div><div class="pv-vu">'+vu+'</div>'):'')+'<a class="pv-home" href="/">Open Sydney Markets Safety Induction</a></div></div>';
+}
 (function loadYT(){const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s)})();
-showStep(0);
-showWelcome();
+(function boot(){
+  const vt=new URLSearchParams(location.search).get('verify');
+  if(vt){showPublicVerify(vt);return}
+  showStep(0);showWelcome();
+})();
 </script>
 </body>
 </html>
