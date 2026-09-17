@@ -655,7 +655,7 @@ const SB_KEY='sb_publishable_VWbV-rEt482mj8cZY7BPPQ_IOjIH7Hy';
 const FN=SB_URL+'/functions/v1/';
 const FN_STAFF_LIST=FN+'staff-list'; // authenticated admin list (rows incl. signed photo_url)
 const sb=supabase.createClient(SB_URL,SB_KEY);
-let session=null,ADMIN_ROWS=[],lastFound=null;
+let session=null,ADMIN_ROWS=[],lastFound=null,ADMIN_TS=0;
 function pubHeaders(){return {apikey:SB_KEY}}
 function authHeaders(token){return {apikey:SB_KEY,Authorization:'Bearer '+token}}
 function dataURLtoBlob(u){const p=u.split(',');const mime=(p[0].match(/:(.*?);/)||[])[1]||'image/jpeg';const bin=atob(p[1]);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:mime})}
@@ -911,12 +911,26 @@ async function fetchAdminList(){
 async function renderTable(){
   $('#sec-table').innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-weight:600">Loading records\u2026</div>';
   try{
-    ADMIN_ROWS=await fetchAdminList();
+    ADMIN_ROWS=await fetchAdminList();ADMIN_TS=Date.now();
     if(!ADMIN_ROWS.length){$('#sec-table').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-weight:600">No inductions recorded yet.</div>';return}
     $('#sec-table').innerHTML=ADMIN_ROWS.map((r,i)=>{const si=stInfo(r.status);return '<div class="trow"><div class="nmcell">'+avatarHTML(r,38)+'<div class="nm"><div class="nm-name">'+r.first+' '+r.last+'</div><div class="st"><span class="badge '+si.cls+'">'+si.label+'</span>'+(r.mobile?'<span class="mob">'+fmtMobile(r.mobile)+'</span>':'')+'</div></div></div><button class="view" onclick="openDetailRow('+i+')">View</button></div>'}).join('');
   }catch(e){$('#sec-table').innerHTML='<div style="padding:20px;text-align:center;color:var(--orange);font-weight:600">Could not load records: '+((e&&e.message)||'error')+'</div>'}
 }
-function openDetailRow(i){openDetail(ADMIN_ROWS[i])}
+async function openDetailRow(i){
+  let row=ADMIN_ROWS[i];
+  if(row&&(Date.now()-ADMIN_TS)>480000){
+    try{
+      const fresh=await fetchAdminList();
+      if(fresh&&fresh.length){
+        const byId={};fresh.forEach(x=>{const k=x.id||x.indId;if(k)byId[k]=x});
+        ADMIN_ROWS.forEach(r0=>{const k=r0.id||r0.indId;const f0=k&&byId[k];if(f0)r0.photo=f0.photo});
+        ADMIN_TS=Date.now();
+        const nf=byId[row.id||row.indId];if(nf)row=nf;
+      }
+    }catch(e){}
+  }
+  openDetail(row);
+}
 async function secSearch(){
   const q=$('#sec-q').value.trim();if(!q){$('#sec-result').innerHTML='';return}
   $('#sec-result').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-weight:600">Searching\u2026</div>';
