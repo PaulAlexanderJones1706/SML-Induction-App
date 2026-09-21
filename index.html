@@ -437,6 +437,10 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
     @keyframes onAutoFillStart{from{opacity:1}to{opacity:1}}
     input:-webkit-autofill{animation-name:onAutoFillStart;animation-duration:.001s}
     select:-webkit-autofill{animation-name:onAutoFillStart;animation-duration:.001s}
+  
+    /* one-question-per-screen */
+    #quiz .q{border-bottom:none;padding-bottom:0;margin-bottom:0}
+    #quiz .qt{font-size:1.15rem;line-height:1.4}
   </style>
 </head>
 <body>
@@ -466,14 +470,17 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
   <div class="wrap" id="indWrap">
 
     <div class="panel" id="step-0">
-      <div class="card">
-        <div class="step-head"><div class="k">Step 1 of 5</div><h2>Your details</h2><p>Tell us who is being inducted. We use your mobile number to find your record on site.</p></div>
+      <div class="card" id="s0a">
+        <div class="step-head"><div class="k">Step 1 of 5 · 1 of 2</div><h2>Your details</h2><p>Tell us who is being inducted. We use your mobile number to find your record on site.</p></div>
         <div class="grid2">
           <div class="field" data-f="firstname"><label>First name <span class="r">*</span></label><input id="f-first" type="text" placeholder="First name" autocomplete="given-name"><div class="err">Enter your first name</div></div>
           <div class="field" data-f="lastname"><label>Last name <span class="r">*</span></label><input id="f-last" type="text" placeholder="Last name" autocomplete="family-name"><div class="err">Enter your last name</div></div>
         </div>
         <div class="field" data-f="mobile"><label>Mobile number <span class="r">*</span></label><input id="f-mobile" type="tel" inputmode="tel" placeholder="0400000000" autocomplete="tel"><div class="hint">This is your unique induction ID.</div><div class="err">Enter a valid Australian mobile (e.g. 0400000000)</div></div>
         <div class="field" data-f="email"><label>Email <span class="r">*</span></label><input id="f-email" type="email" placeholder="you@email.com" autocomplete="email"><div class="hint">We email your certificate here — please check it is correct.</div><div class="err">Enter a valid email address</div></div>
+      </div>
+      <div class="card hidden" id="s0b">
+        <div class="step-head"><div class="k">Step 1 of 5 · 2 of 2</div><h2>About you</h2><p>Two more details and you’re ready to start.</p></div>
         <div class="field" data-f="company"><label>Company / organisation <span class="r">*</span></label><input id="f-company" type="text" placeholder="e.g. Favetta Fresh Produce" autocomplete="organization"><div class="err">Enter your company or organisation</div></div>
         <div class="field" data-f="ptype"><label>What best describes you? <span class="r">*</span></label><select id="f-ptype" class="select" onchange="onPtype()" autocomplete="off"><option value="" disabled selected>Select an option</option></select><div class="err">Select what best describes you</div></div>
       </div>
@@ -538,7 +545,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
         </div>
       </div>
       <div class="pass-actions">
-        <button class="btn btn-dark btn-lg" onclick="sharePass()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg> Share / save my pass</button>
+        <button class="btn btn-dark btn-lg" onclick="sharePass()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg> Save or present my pass</button>
       </div>
       <p class="pass-tip">Tip: share it to your own phone (e.g. to your Messages) so you keep a copy.</p>
       <div class="sent">
@@ -700,7 +707,7 @@ let slideIdx=0,seen=new Set([0]);
 let videoWatched=false;
 let quizChosen={},quizAttempts=0,firstAnswers=null;
 let photoData=null,camStream=null,camReady=false;
-let chosenType=null;
+let chosenType=null;let sub0=0,qIdx=0;
 let lastRec=null;
 
 function renderRail(){$('#rail').innerHTML=STEPS.map((s,i)=>{const cls=i<step?'done':(i===step?'active':'');return '<div class="seg '+cls+'"><div class="bar"><i></i></div><div class="lab">'+s+'</div></div>'}).join('')}
@@ -714,20 +721,23 @@ function showStep(n){
   const bar=$('#actionbar'),back=$('#btn-back'),next=$('#btn-next'),note=$('#ab-note');
   if(n===5){bar.classList.add('hidden');window.scrollTo(0,0);requestAnimationFrame(()=>window.scrollTo(0,0));setTimeout(()=>window.scrollTo(0,0),60);return}else bar.classList.remove('hidden');
   back.classList.toggle('hidden',n===0);note.textContent='';
-  if(n===0){next.textContent='Continue';renderPtypeChips();refreshDetailsGate();setTimeout(refreshDetailsGate,250);setTimeout(refreshDetailsGate,800)}
+  if(n===0){renderStep0()}
   if(n===1){next.textContent='Continue';initPhoto()}
   if(n===2){next.textContent='Continue';renderSlides();refreshSlideGate()}
   if(n===3){next.textContent='Continue';initVideo();refreshVideoGate()}
-  if(n===4){next.textContent='Complete induction';renderQuiz();refreshQuizGate()}
+  if(n===4){qIdx=0;renderQuiz();refreshQuizGate()}
 }
-function stepNext(){if($('#btn-next').disabled)return;if(step===4){submitInduction();return}showStep(step+1)}
-function stepBack(){if(step>0)showStep(step-1)}
+function stepNext(){if($('#btn-next').disabled)return;if(step===0){if(sub0===0){sub0=1;renderStep0();return}}if(step===4){if(qIdx<QUIZ.length-1){qIdx++;renderQuiz();refreshQuizGate();window.scrollTo(0,0);return}submitInduction();return}showStep(step+1)}
+function stepBack(){if(step===0){if(sub0===1){sub0=0;renderStep0();return}return}if(step===1){sub0=1;showStep(0);return}if(step===4&&qIdx>0){qIdx--;renderQuiz();refreshQuizGate();window.scrollTo(0,0);return}if(step>0)showStep(step-1)}
 
 document.addEventListener('input',e=>{if(['f-first','f-last','f-mobile','f-email','f-company'].includes(e.target.id))refreshDetailsGate()});
 ['change','blur','focusout','animationstart'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target&&['f-first','f-last','f-mobile','f-email','f-company'].includes(e.target.id))refreshDetailsGate()},true));
 function getDetails(){return{first:$('#f-first').value.trim(),last:$('#f-last').value.trim(),mobile:$('#f-mobile').value.trim(),email:$('#f-email').value.trim(),company:$('#f-company').value.trim(),type:chosenType}}
-function detailsValid(){const d=getDetails();return d.first&&d.last&&isValidMobile(d.mobile)&&isValidEmail(d.email)&&d.company&&chosenType}
-function refreshDetailsGate(){if(step===0)$('#btn-next').disabled=!detailsValid()}
+function detailsValidA(){const d=getDetails();return d.first&&d.last&&isValidMobile(d.mobile)&&isValidEmail(d.email)}
+function detailsValidB(){const d=getDetails();return d.company&&chosenType}
+function detailsValid(){return detailsValidA()&&detailsValidB()}
+function refreshDetailsGate(){if(step!==0)return;$('#btn-next').disabled=sub0===0?!detailsValidA():!detailsValidB()}
+function renderStep0(){renderPtypeChips();$('#s0a').classList.toggle('hidden',sub0!==0);$('#s0b').classList.toggle('hidden',sub0!==1);$('#btn-back').classList.toggle('hidden',sub0===0);$('#btn-next').textContent='Continue';refreshDetailsGate();setTimeout(refreshDetailsGate,250);setTimeout(refreshDetailsGate,800);window.scrollTo(0,0)}
 
 function initPhoto(){applyPhotoUI();startCamera()}
 async function startCamera(){
@@ -792,19 +802,26 @@ function forceVideoComplete(){videoWatched=true;$('#vbar-fill').style.width='100
 function refreshVideoGate(){if(step!==3)return;$('#btn-next').disabled=!videoWatched;$('#ab-note').textContent=videoWatched?'Video complete — you can continue.':'The button unlocks once you\u2019ve watched the video.'}
 
 function renderQuiz(){
-  $('#quiz').innerHTML=QUIZ.map((q,qi)=>'<div class="q" data-q="'+qi+'"><div class="qn">Question '+(qi+1)+' of '+QUIZ.length+'</div><div class="qt">'+q.q+'</div>'+q.opts.map((o,oi)=>'<label class="opt '+(quizChosen[qi]===oi?'chosen':'')+'" data-opt="'+oi+'"><input type="radio" name="q'+qi+'" '+(quizChosen[qi]===oi?'checked':'')+' onchange="chooseQuiz('+qi+','+oi+')"><span>'+o+'</span></label>').join('')+'</div>').join('');
-  $('#quiz-err').style.display='none';
+  const qi=qIdx,q=QUIZ[qi],chosen=quizChosen[qi];
+  $('#quiz').innerHTML='<div class="q" data-q="'+qi+'"><div class="qn">Question '+(qi+1)+' of '+QUIZ.length+'</div><div class="qt">'+q.q+'</div>'+q.opts.map((o,oi)=>{let cls='opt';if(chosen===oi)cls+=(oi===q.correct?' chosen':' wrong');return '<label class="'+cls+'" data-opt="'+oi+'"><input type="radio" name="q'+qi+'" '+(chosen===oi?'checked':'')+' onchange="chooseQuiz('+qi+','+oi+')"><span>'+o+'</span></label>'}).join('')+'</div>';
+  $('#quiz-err').style.display='none';$('#quiz-ok').style.display='none';
 }
-function chooseQuiz(qi,oi){quizChosen[qi]=oi;$$('.q[data-q="'+qi+'"] .opt').forEach(el=>{el.classList.remove('chosen','wrong','right');if(+el.dataset.opt===oi)el.classList.add('chosen')});refreshQuizGate()}
-function refreshQuizGate(){if(step!==4)return;const answered=Object.keys(quizChosen).length===QUIZ.length;$('#btn-next').disabled=!answered;$('#ab-note').textContent=answered?'All questions answered.':'Answer all questions ('+(QUIZ.length-Object.keys(quizChosen).length)+' left).'}
+function chooseQuiz(qi,oi){
+  if(firstAnswers===null)firstAnswers=QUIZ.map(()=>undefined);
+  if(firstAnswers[qi]===undefined)firstAnswers[qi]=oi;
+  const correct=QUIZ[qi].correct;quizChosen[qi]=oi;
+  if(oi!==correct)quizAttempts++;
+  $$('.q[data-q="'+qi+'"] .opt').forEach(el=>{el.classList.remove('chosen','wrong','right');if(+el.dataset.opt===oi)el.classList.add(oi===correct?'chosen':'wrong')});
+  refreshQuizGate();
+}
+function refreshQuizGate(){if(step!==4)return;const q=QUIZ[qIdx];const ok=quizChosen[qIdx]===q.correct;const picked=quizChosen[qIdx]!==undefined;$('#btn-next').disabled=!ok;$('#btn-next').textContent=(qIdx===QUIZ.length-1)?'Complete induction':'Continue';$('#ab-note').textContent=ok?'Correct — you can continue.':(picked?'Not quite — choose the correct answer to continue.':'Select your answer.')}
 
 async function submitInduction(){
   quizAttempts++;
   if(!firstAnswers)firstAnswers=QUIZ.map((q,i)=>quizChosen[i]);
-  let wrong=[];
-  QUIZ.forEach((q,i)=>{const els=$$('.q[data-q="'+i+'"] .opt');els.forEach(el=>el.classList.remove('right','wrong'));if(quizChosen[i]!==q.correct){wrong.push(i);if(els[quizChosen[i]])els[quizChosen[i]].classList.add('wrong')}});
+  let wrong=[];QUIZ.forEach((q,i)=>{if(quizChosen[i]!==q.correct)wrong.push(i)});
   const errBox=$('#quiz-err');
-  if(wrong.length){errBox.className='quiz-msg err';errBox.style.display='block';errBox.textContent=wrong.length+' answer'+(wrong.length>1?'s':'')+' incorrect. Review the highlighted question'+(wrong.length>1?'s':'')+' and try again.';QUIZ.forEach((q,i)=>{if(!wrong.includes(i)){const e=$$('.q[data-q="'+i+'"] .opt')[q.correct];if(e)e.classList.add('right')}});window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});return}
+  if(wrong.length){qIdx=wrong[0];renderQuiz();refreshQuizGate();errBox.className='quiz-msg err';errBox.style.display='block';errBox.textContent='Please answer this question correctly to complete your induction.';window.scrollTo(0,0);return}
   errBox.style.display='none';
   const d=getDetails();const score=firstAnswers.reduce((n,a,i)=>n+(a===QUIZ[i].correct?1:0),0);
   const nextBtn=$('#btn-next');nextBtn.disabled=true;
@@ -826,7 +843,7 @@ async function submitInduction(){
     ok.style.display='none';nextBtn.disabled=false;
     errBox.className='quiz-msg err';errBox.style.display='block';
     errBox.textContent='We couldn\u2019t submit your induction ('+((e&&e.message)||'connection error')+'). Please check your connection and press Complete induction again.';
-    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+    window.scrollTo(0,0);
   }
 }
 function fillPass(r){
@@ -844,7 +861,7 @@ function fillPass(r){
   const vurl='https://www.sml-inductions.app/?verify='+encodeURIComponent(r.verification_token||'');
   try{if(window.QRCode&&r.verification_token){new QRCode(qr,{text:vurl,width:104,height:104,colorDark:'#020405',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M})}else{$('#p-qr-note').textContent='Induction reference: '+(r.indId||'')}}catch(e){}
 }
-function resetInduction(){step=0;slideIdx=0;seen=new Set([0]);videoWatched=false;quizChosen={};quizAttempts=0;firstAnswers=null;photoData=null;chosenType=null;renderPtypeChips();stopCamera();['f-first','f-last','f-mobile','f-email','f-company'].forEach(id=>$('#'+id).value='');if(player&&player.stopVideo)try{player.stopVideo()}catch(e){}$('#vbar-fill').style.width='0';$('#vbar-pct').textContent='Not started';$('#vbar-pct').className='vlocked';revealFlow();showStep(0)}
+function resetInduction(){step=0;sub0=0;qIdx=0;slideIdx=0;seen=new Set([0]);videoWatched=false;quizChosen={};quizAttempts=0;firstAnswers=null;photoData=null;chosenType=null;renderPtypeChips();stopCamera();['f-first','f-last','f-mobile','f-email','f-company'].forEach(id=>$('#'+id).value='');if(player&&player.stopVideo)try{player.stopVideo()}catch(e){}$('#vbar-fill').style.width='0';$('#vbar-pct').textContent='Not started';$('#vbar-pct').className='vlocked';revealFlow();showStep(0)}
 function finishToHome(){resetInduction();showWelcome()}
 
 function addToWallet(){toast('Wallet pass ready to wire up — Apple Wallet & Google Wallet in the next build')}
@@ -857,7 +874,7 @@ async function sharePass(){
 
 function revealFlow(){$('#welcomeScreen').classList.add('hidden');$('#rail').classList.remove('hidden');$('#indWrap').classList.remove('hidden');$('#actionbar').classList.remove('hidden')}
 function showWelcome(){$('#welcomeScreen').classList.remove('hidden');$('#rail').classList.add('hidden');$('#indWrap').classList.add('hidden');$('#actionbar').classList.add('hidden');window.scrollTo({top:0})}
-function beginInduction(){revealFlow();showStep(0)}
+function beginInduction(){sub0=0;revealFlow();showStep(0)}
 function renderPtypeChips(){const el=document.getElementById('f-ptype');if(!el)return;if(el.options.length<=1){el.insertAdjacentHTML('beforeend',PERSON_TYPES.map(t=>'<option value="'+t+'">'+t+'</option>').join(''))}el.value=chosenType||''}
 function onPtype(){const el=document.getElementById('f-ptype');chosenType=(el&&el.value)?el.value:null;refreshDetailsGate()}
 function selectPtype(t){chosenType=t;renderPtypeChips();refreshDetailsGate()}
