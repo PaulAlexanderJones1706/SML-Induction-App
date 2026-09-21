@@ -813,7 +813,7 @@ document.addEventListener('touchend',e=>{if(step!==2)return;const dx=e.changedTo
 let player=null,vpoll=null;
 function initVideo(){
   if(player){refreshVideoGate();return}
-  const make=()=>{player=new YT.Player('ytplayer',{videoId:'dHiqRQQnekY',playerVars:{rel:0,modestbranding:1,playsinline:1},events:{onStateChange:onVState}})};
+  const make=()=>{player=new YT.Player('ytplayer',{videoId:'FsMH8F1iS8I',playerVars:{rel:0,modestbranding:1,playsinline:1},events:{onStateChange:onVState}})};
   if(window.YT&&YT.Player)make();else window.onYouTubeIframeAPIReady=make;
 }
 function onVState(e){if(e.data===YT.PlayerState.PLAYING){clearInterval(vpoll);vpoll=setInterval(pollVideo,500)}if(e.data===YT.PlayerState.ENDED)forceVideoComplete()}
