@@ -445,6 +445,16 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
     /* Next = dark green, Continue/Complete = brand green */
     .btn-primary.is-next:not(:disabled){background:var(--green-dark)}
     
+  
+    /* accessibility helpers */
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .field h2:focus,.step-head h2:focus,[tabindex="-1"]:focus{outline:none}
+    .mode-switch button{min-height:40px;display:flex;align-items:center}
+    .view{min-height:40px}
+    .faq-q{min-height:44px}
+    .close{min-width:40px;min-height:40px}
+    .cam-alt button{min-height:40px}
+    .pw-toggle{min-height:36px}
   </style>
 </head>
 <body>
@@ -477,16 +487,16 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
       <div class="card" id="s0a">
         <div class="step-head"><div class="k">Step 1 of 5 · 1 of 2</div><h2>Your details</h2><p>Tell us who is being inducted. We use your mobile number to find your record on site.</p></div>
         <div class="grid2">
-          <div class="field" data-f="firstname"><label>First name <span class="r">*</span></label><input id="f-first" type="text" placeholder="First name" autocomplete="given-name"><div class="err">Enter your first name</div></div>
-          <div class="field" data-f="lastname"><label>Last name <span class="r">*</span></label><input id="f-last" type="text" placeholder="Last name" autocomplete="family-name"><div class="err">Enter your last name</div></div>
+          <div class="field" data-f="firstname"><label for="f-first">First name <span class="r">*</span></label><input id="f-first" type="text" placeholder="First name" autocomplete="given-name"><div class="err">Enter your first name</div></div>
+          <div class="field" data-f="lastname"><label for="f-last">Last name <span class="r">*</span></label><input id="f-last" type="text" placeholder="Last name" autocomplete="family-name"><div class="err">Enter your last name</div></div>
         </div>
-        <div class="field" data-f="mobile"><label>Mobile number <span class="r">*</span></label><input id="f-mobile" type="tel" inputmode="tel" placeholder="0400000000" autocomplete="tel"><div class="hint">This is your unique induction ID.</div><div class="err">Enter a valid Australian mobile (e.g. 0400000000)</div></div>
-        <div class="field" data-f="email"><label>Email <span class="r">*</span></label><input id="f-email" type="email" placeholder="you@email.com" autocomplete="email"><div class="hint">We email your certificate here, please check it is correct.</div><div class="err">Enter a valid email address</div></div>
+        <div class="field" data-f="mobile"><label for="f-mobile">Mobile number <span class="r">*</span></label><input id="f-mobile" type="tel" inputmode="tel" placeholder="0400000000" autocomplete="tel"><div class="hint">This is your unique induction ID.</div><div class="err">Enter a valid Australian mobile (e.g. 0400000000)</div></div>
+        <div class="field" data-f="email"><label for="f-email">Email <span class="r">*</span></label><input id="f-email" type="email" placeholder="you@email.com" autocomplete="email"><div class="hint">We email your certificate here, please check it is correct.</div><div class="err">Enter a valid email address</div></div>
       </div>
       <div class="card hidden" id="s0b">
         <div class="step-head"><div class="k">Step 1 of 5 · 2 of 2</div><h2>About you</h2><p>Two more details and you’re ready to start.</p></div>
-        <div class="field" data-f="company"><label>Company / organisation <span class="r">*</span></label><input id="f-company" type="text" placeholder="e.g. Favetta Fresh Produce" autocomplete="organization"><div class="err">Enter your company or organisation</div></div>
-        <div class="field" data-f="ptype"><label>What best describes you? <span class="r">*</span></label><select id="f-ptype" class="select" onchange="onPtype()" autocomplete="off"><option value="" disabled selected>Select an option</option></select><div class="err">Select what best describes you</div></div>
+        <div class="field" data-f="company"><label for="f-company">Company / organisation <span class="r">*</span></label><input id="f-company" type="text" placeholder="e.g. Favetta Fresh Produce" autocomplete="organization"><div class="err">Enter your company or organisation</div></div>
+        <div class="field" data-f="ptype"><label for="f-ptype">What best describes you? <span class="r">*</span></label><select id="f-ptype" class="select" onchange="onPtype()" autocomplete="off"><option value="" disabled selected>Select an option</option></select><div class="err">Select what best describes you</div></div>
       </div>
     </div>
 
@@ -508,6 +518,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
         </div>
         <input id="cam-file" type="file" accept="image/*" capture="user" class="hidden" onchange="onFilePhoto(event)">
         <div class="cam-alt"><button onclick="document.getElementById('cam-file').click()">Or upload a photo</button></div>
+        <div class="quiz-msg err" id="photo-err" role="alert" style="margin-top:12px;display:none"></div>
       </div>
     </div>
 
@@ -523,7 +534,8 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
         <div class="videowrap"><div id="ytplayer"></div></div>
         <div class="vbar"><i id="vbar-fill"></i></div>
         <div class="vmeta"><span id="vbar-pct" class="vlocked">Not started</span><span id="vbar-time">0:00</span></div>
-        <div style="text-align:center"><button class="demo-skip" onclick="forceVideoComplete()">Demo only, skip the watch requirement</button></div>
+        <!-- INTERNAL REVIEW ONLY. Remove video skip and forceVideoComplete() before public production launch. -->
+        <div style="text-align:center"><button class="demo-skip" onclick="forceVideoComplete()">Internal review: Skip video</button></div>
       </div>
     </div>
 
@@ -553,9 +565,8 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
       </div>
       <p class="pass-tip">Tip: share it to your own phone (e.g. to your Messages) so you keep a copy.</p>
       <div class="sent">
-        <div class="line"><div class="d"><svg viewBox="0 0 24 24" fill="none" stroke="#30642D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div><div><b>Confirmation emailed</b><span id="s-email"></span></div></div>
-        <div class="line"><div class="d"><svg viewBox="0 0 24 24" fill="none" stroke="#30642D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></div><div><b>SMS confirmation sent</b><span id="s-sms"></span></div></div>
-        <div class="line"><div class="d"><svg viewBox="0 0 24 24" fill="none" stroke="#30642D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></div><div><b>Record filed to WHS database</b><span>Notified: WHS inbox + SML Security mobile</span></div></div>
+        <div class="line"><div class="d"><svg viewBox="0 0 24 24" fill="none" stroke="#30642D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div><div><b>A copy of your pass is on its way</b><span>Being sent to <span id="s-email"></span> and <span id="s-sms"></span>. Your induction is complete even if this takes a little longer to arrive.</span></div></div>
+        <div class="line"><div class="d"><svg viewBox="0 0 24 24" fill="none" stroke="#30642D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div><b>Your on-screen pass is your proof of completion</b><span>Show this screen, or the emailed copy, to Sydney Markets Security on site.</span></div></div>
       </div>
       <div style="margin-top:24px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn btn-ghost" onclick="finishToHome()">Done</button><button class="btn btn-ghost" onclick="resetInduction()">Start another induction</button></div>
     </div>
@@ -575,8 +586,8 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
       <div class="eyebrow" style="justify-content:center;color:var(--magenta)">SML staff · restricted</div>
       <h2 style="font-size:1.5rem;font-weight:800;margin:10px 0 4px">Inductee database</h2>
       <p style="color:var(--muted);font-weight:500;margin:0 0 20px;font-size:.92rem">Authorised staff only. Your access level determines what you can see.</p>
-      <div class="field" style="text-align:left" data-f="mail"><label>Email</label><input id="sec-email" type="email" placeholder="you@sydneymarkets.com.au" autocomplete="username" onkeydown="if(event.key==='Enter')secLogin()"></div>
-      <div class="field" style="text-align:left" data-f="pw"><label>Password</label><div class="pw-wrap"><input id="sec-pw" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')secLogin()"><button type="button" class="pw-toggle" onclick="togglePw(this)" aria-label="Show password">Show</button></div><div class="err">Incorrect email or password</div></div>
+      <div class="field" style="text-align:left" data-f="mail"><label for="sec-email">Email</label><input id="sec-email" type="email" placeholder="you@sydneymarkets.com.au" autocomplete="username" onkeydown="if(event.key==='Enter')secLogin()"></div>
+      <div class="field" style="text-align:left" data-f="pw"><label for="sec-pw">Password</label><div class="pw-wrap"><input id="sec-pw" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')secLogin()"><button type="button" class="pw-toggle" onclick="togglePw(this)" aria-label="Show password">Show</button></div><div class="err">Incorrect email or password</div></div>
       <button class="btn btn-dark btn-lg" onclick="secLogin()">Sign in</button>
       <p class="staff-note">Authorised Sydney Markets staff only.</p>
     </div>
@@ -606,7 +617,8 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<div id="publicVerify" class="hidden"></div>
+<div id="live" class="sr-only" role="status" aria-live="polite"></div>
+  <div id="publicVerify" class="hidden"></div>
   <div id="modal-root"></div>
 <div id="toast"><span class="dot"></span><span id="toast-msg"></span></div>
 
@@ -676,7 +688,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 let session=null,ADMIN_ROWS=[],lastFound=null,ADMIN_TS=0;
 function pubHeaders(){return {apikey:SB_KEY}}
 function authHeaders(token){return {apikey:SB_KEY,Authorization:'Bearer '+token}}
-function toJpeg(src,cb){const img=new Image();img.onload=function(){let w=img.naturalWidth||img.width||480,ht=img.naturalHeight||img.height||600;const max=1000;const s=Math.min(1,max/Math.max(w,ht));w=Math.round(w*s);ht=Math.round(ht*s);const cv=document.createElement('canvas');cv.width=w;cv.height=ht;const cx=cv.getContext('2d');cx.drawImage(img,0,0,w,ht);try{cb(cv.toDataURL('image/jpeg',0.82))}catch(e){cb(src)}};img.onerror=function(){cb(src)};img.src=src}
+function toJpeg(src,onOk,onFail){const img=new Image();img.onload=function(){try{let w=img.naturalWidth||img.width||0,ht=img.naturalHeight||img.height||0;if(!w||!ht)throw 0;const max=1000;const s=Math.min(1,max/Math.max(w,ht));w=Math.round(w*s);ht=Math.round(ht*s);const cv=document.createElement('canvas');cv.width=w;cv.height=ht;const cx=cv.getContext('2d');cx.drawImage(img,0,0,w,ht);const out=cv.toDataURL('image/jpeg',0.82);if(!out||out.length<50)throw 0;onOk(out)}catch(e){if(onFail)onFail()}};img.onerror=function(){if(onFail)onFail()};img.src=src}
 function dataURLtoBlob(u){const p=u.split(',');const mime=(p[0].match(/:(.*?);/)||[])[1]||'image/jpeg';const bin=atob(p[1]);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:mime})}
 function norm(r){const first=r.first_name||r.first||'';const last=r.last_name||r.last||'';const nm=r.name||((first+' '+last).trim());return {id:r.id,indId:r.induction_ref||r.ref||'',first:first||(nm.split(' ')[0]||''),last:last||(nm.split(' ').slice(1).join(' ')||''),name:nm||'',company:r.company||'',type:r.inductee_type||r.type||'',mobile:r.mobile||'',email:r.email||'',score:(r.score!=null?r.score:null),attempts:r.attempts,answers:r.answers,completed_at:r.completed_at,valid_until:r.valid_until,status:r.status||'current',photo:r.photo_url||null,version:r.induction_version||r.version||''}}
 function stInfo(s){if(s==='current')return{label:'Valid',cls:'valid',color:'#30642D'};if(s==='revoked')return{label:'Revoked',cls:'exp',color:'#E73E10'};if(s==='expired')return{label:'Expired',cls:'exp',color:'#E73E10'};return{label:'Not found',cls:'exp',color:'#6f6d63'}}
@@ -696,6 +708,7 @@ function refOf(r){return r.indId||('SML-IND-'+String(parseInt(digits(r.mobile).s
 function scoreOf(r){return (r.ans||[]).reduce((n,a,i)=>n+(a===QUIZ[i].correct?1:0),0)}
 function scoreClass(s){const t=QUIZ.length,ra=s/t;return ra>=1?'s5':(ra>=0.8?'s4':'slo')}
 function toast(msg){const t=$('#toast');$('#toast-msg').textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3400)}
+function announce(msg){const el=document.getElementById('live');if(el)el.textContent=msg}
 const AV_COLORS=[C.green,C.magenta,C.amber,C.orange,C.greenDark];
 function avatarHTML(r,size,cls){
   const s=size||44;const extra=cls?(' '+cls):'';
@@ -713,11 +726,12 @@ let videoWatched=false;
 let quizChosen={},quizAttempts=0,firstAnswers=null;
 let photoData=null,camStream=null,camReady=false;
 let chosenType=null;let sub0=0,qIdx=0,quizGraded=false,reviewList=[],reviewPos=0;
-let lastRec=null;
+let lastRec=null;let submitting=false;
 
 function renderRail(){$('#rail').innerHTML=STEPS.map((s,i)=>{const cls=i<step?'done':(i===step?'active':'');return '<div class="seg '+cls+'"><div class="bar"><i></i></div><div class="lab">'+s+'</div></div>'}).join('')}
 
 function setNext(t){const b=document.getElementById('btn-next');if(!b)return;b.textContent=t;b.classList.toggle('is-next',t==='Next')}
+function focusStep(){let hd=null;if(step===0){hd=(sub0===0?document.querySelector('#s0a h2'):document.querySelector('#s0b h2'))}else{hd=document.querySelector('#step-'+step+' h2')}if(hd){hd.setAttribute('tabindex','-1');announce(hd.textContent);setTimeout(()=>{try{hd.focus({preventScroll:true})}catch(e){}},40)}}
 function showStep(n){
   stopCamera();
   step=n;
@@ -732,18 +746,20 @@ function showStep(n){
   if(n===2){renderSlides();refreshSlideGate()}
   if(n===3){setNext('Continue');initVideo();refreshVideoGate()}
   if(n===4){qIdx=0;renderQuiz();refreshQuizGate()}
+  if(n>=1&&n<=4)focusStep();
 }
 function stepNext(){if($('#btn-next').disabled)return;if(step===0){if(sub0===0){sub0=1;renderStep0();return}}if(step===2){if(slideIdx<SLIDES.length-1){slideNext();window.scrollTo(0,0);return}showStep(3);return}if(step===4){if(quizGraded){if(reviewPos<reviewList.length-1){reviewPos++;qIdx=reviewList[reviewPos];renderQuiz();refreshQuizGate();window.scrollTo(0,0);return}submitInduction();return}if(qIdx<QUIZ.length-1){qIdx++;renderQuiz();refreshQuizGate();window.scrollTo(0,0);return}submitInduction();return}showStep(step+1)}
 function stepBack(){if(step===0){if(sub0===1){sub0=0;renderStep0();return}return}if(step===1){sub0=1;showStep(0);return}if(step===2&&slideIdx>0){slidePrev();window.scrollTo(0,0);return}if(step===4){if(quizGraded){if(reviewPos>0){reviewPos--;qIdx=reviewList[reviewPos];renderQuiz();refreshQuizGate();window.scrollTo(0,0)}return}if(qIdx>0){qIdx--;renderQuiz();refreshQuizGate();window.scrollTo(0,0);return}}if(step>0)showStep(step-1)}
 
 document.addEventListener('input',e=>{if(['f-first','f-last','f-mobile','f-email','f-company'].includes(e.target.id))refreshDetailsGate()});
 ['change','blur','focusout','animationstart'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target&&['f-first','f-last','f-mobile','f-email','f-company'].includes(e.target.id))refreshDetailsGate()},true));
+document.addEventListener('focusin',e=>{const t=e.target;if(t&&t.matches&&t.matches('input,select,textarea')){setTimeout(()=>{try{t.scrollIntoView({block:'center',behavior:'smooth'})}catch(_){}},250)}});
 function getDetails(){return{first:$('#f-first').value.trim(),last:$('#f-last').value.trim(),mobile:$('#f-mobile').value.trim(),email:$('#f-email').value.trim(),company:$('#f-company').value.trim(),type:chosenType}}
 function detailsValidA(){const d=getDetails();return d.first&&d.last&&isValidMobile(d.mobile)&&isValidEmail(d.email)}
 function detailsValidB(){const d=getDetails();return d.company&&chosenType}
 function detailsValid(){return detailsValidA()&&detailsValidB()}
-function refreshDetailsGate(){if(step!==0)return;$('#btn-next').disabled=sub0===0?!detailsValidA():!detailsValidB()}
-function renderStep0(){renderPtypeChips();$('#s0a').classList.toggle('hidden',sub0!==0);$('#s0b').classList.toggle('hidden',sub0!==1);$('#btn-back').classList.toggle('hidden',sub0===0);setNext('Continue');refreshDetailsGate();setTimeout(refreshDetailsGate,250);setTimeout(refreshDetailsGate,800);window.scrollTo(0,0)}
+function refreshDetailsGate(){if(step!==0)return;$('#btn-next').disabled=sub0===0?!detailsValidA():!detailsValidB();const mob=$('#f-mobile'),em=$('#f-email');if(mob)mob.setAttribute('aria-invalid',(mob.value&&!isValidMobile(mob.value))?'true':'false');if(em)em.setAttribute('aria-invalid',(em.value&&!isValidEmail(em.value))?'true':'false')}
+function renderStep0(){renderPtypeChips();$('#s0a').classList.toggle('hidden',sub0!==0);$('#s0b').classList.toggle('hidden',sub0!==1);$('#btn-back').classList.toggle('hidden',sub0===0);setNext('Continue');refreshDetailsGate();setTimeout(refreshDetailsGate,250);setTimeout(refreshDetailsGate,800);focusStep();window.scrollTo(0,0)}
 
 function initPhoto(){applyPhotoUI();startCamera()}
 async function startCamera(){
@@ -764,6 +780,7 @@ function applyPhotoUI(){
   empty.style.display=(!hasPhoto&&!camReady)?'flex':'none';
   $('#btn-capture').classList.toggle('hidden',hasPhoto||!camReady);
   $('#btn-retake').classList.toggle('hidden',!hasPhoto);
+  const pe=$('#photo-err');if(pe&&hasPhoto)pe.style.display='none';
   refreshPhotoGate();
 }
 function capturePhoto(){
@@ -775,7 +792,8 @@ function capturePhoto(){
   stopCamera();applyPhotoUI();
 }
 function retakePhoto(){photoData=null;applyPhotoUI();startCamera()}
-function onFilePhoto(e){const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{toJpeg(rd.result,function(d){photoData=d;stopCamera();applyPhotoUI()})};rd.readAsDataURL(f)}
+function onFilePhoto(e){const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onerror=function(){photoFail()};rd.onload=()=>{toJpeg(rd.result,function(d){photoData=d;const pe=$('#photo-err');if(pe)pe.style.display='none';stopCamera();applyPhotoUI()},function(){photoFail()})};rd.readAsDataURL(f)}
+function photoFail(){photoData=null;const el=$('#photo-err');if(el){el.style.display='block';el.textContent='We could not process that photo. Please take a new photo or choose a different image.'}applyPhotoUI();announce('We could not process that photo. Please take a new photo or choose a different image.')}
 function refreshPhotoGate(){if(step!==1)return;$('#btn-next').disabled=!photoData;$('#ab-note').textContent=photoData?'Photo captured, you can continue.':'Take or upload a photo to continue.'}
 
 function renderSlides(){
@@ -813,8 +831,6 @@ function renderQuiz(){
   $('#quiz-err').style.display='none';$('#quiz-ok').style.display='none';
 }
 function chooseQuiz(qi,oi){
-  if(firstAnswers===null)firstAnswers=QUIZ.map(()=>undefined);
-  if(firstAnswers[qi]===undefined)firstAnswers[qi]=oi;
   quizChosen[qi]=oi;const correct=QUIZ[qi].correct;
   $$('.q[data-q="'+qi+'"] .opt').forEach(el=>{el.classList.remove('chosen','wrong','right');if(+el.dataset.opt===oi)el.classList.add(quizGraded?(oi===correct?'chosen':'wrong'):'chosen')});
   refreshQuizGate();
@@ -822,6 +838,9 @@ function chooseQuiz(qi,oi){
 function refreshQuizGate(){if(step!==4)return;const q=QUIZ[qIdx];const good=quizGraded?(quizChosen[qIdx]===q.correct):(quizChosen[qIdx]!==undefined);$('#btn-next').disabled=!good;const last=quizGraded?(reviewPos>=reviewList.length-1):(qIdx===QUIZ.length-1);setNext(last?'Complete induction':'Next');if(quizGraded){$('#btn-back').classList.toggle('hidden',reviewPos===0)}else{$('#btn-back').classList.remove('hidden')}let note;if(quizGraded){note=(quizChosen[qIdx]!==q.correct)?'That answer is not correct. Choose the right one to continue.':(last?'Correct. Submit to finish.':'Correct. Press Next for the next one.')}else{note=(quizChosen[qIdx]===undefined)?'Select your answer to continue.':('Question '+(qIdx+1)+' of '+QUIZ.length)}$('#ab-note').textContent=note}
 
 async function submitInduction(){
+  if(submitting)return;
+  const unanswered=QUIZ.findIndex((q,i)=>quizChosen[i]===undefined);
+  if(unanswered>=0){quizGraded=false;qIdx=unanswered;renderQuiz();refreshQuizGate();window.scrollTo(0,0);return}
   quizAttempts++;
   if(!firstAnswers)firstAnswers=QUIZ.map((q,i)=>quizChosen[i]);
   let wrong=[];QUIZ.forEach((q,i)=>{if(quizChosen[i]!==q.correct)wrong.push(i)});
@@ -829,8 +848,12 @@ async function submitInduction(){
   if(wrong.length){quizGraded=true;reviewList=wrong;reviewPos=0;qIdx=wrong[0];renderQuiz();refreshQuizGate();errBox.className='quiz-msg err';errBox.style.display='block';errBox.textContent=(wrong.length===1?'1 answer needs fixing. Correct it, then submit.':(wrong.length+' answers need fixing. Correct each one with Next, then submit.'))+' Your correct answers are kept.';window.scrollTo(0,0);return}
   errBox.style.display='none';
   const d=getDetails();const score=firstAnswers.reduce((n,a,i)=>n+(a===QUIZ[i].correct?1:0),0);
+  submitting=true;
   const nextBtn=$('#btn-next');nextBtn.disabled=true;
-  const ok=$('#quiz-ok');ok.style.display='block';ok.textContent='Submitting your induction\u2026';
+  const ok=$('#quiz-ok');ok.style.display='block';ok.textContent='Saving your induction\u2026';
+  $('#ab-note').textContent='Please do not close this page while we save your induction.';
+  announce('Saving your induction. Please do not close this page.');
+  let res;
   try{
     const fd=new FormData();
     fd.append('first_name',d.first);fd.append('last_name',d.last);fd.append('mobile',normaliseMobile(d.mobile));fd.append('email',d.email);
@@ -839,17 +862,19 @@ async function submitInduction(){
     fd.append('induction_version',INDUCTION_VERSION);fd.append('content_version',CONTENT_VERSION);fd.append('question_version',QUESTION_VERSION);
     fd.append('privacy_consent','true');fd.append('terms_accepted','true');
     if(photoData){const pb=dataURLtoBlob(photoData);const pext=(pb.type==='image/png')?'png':(pb.type==='image/webp'?'webp':'jpg');fd.append('photo',pb,'selfie.'+pext);}
-    const res=await fetch(FN+'submit-induction',{method:'POST',headers:pubHeaders(),body:fd});
-    const out=await res.json().catch(()=>({}));
-    if(!res.ok||!out.ok)throw new Error(out.error||out.message||('HTTP '+res.status));
-    const rec={indId:out.induction_ref,verification_token:out.verification_token,first:d.first,last:d.last,mobile:digits(d.mobile),email:d.email,company:d.company,type:d.type,date:new Date(out.completed_at||Date.now()),validUntil:out.valid_until,status:out.status||'current',photo:photoData};
-    lastRec=rec;ok.style.display='none';fillPass(rec);showStep(5);toast('Induction submitted');
-  }catch(e){
-    ok.style.display='none';nextBtn.disabled=false;
-    errBox.className='quiz-msg err';errBox.style.display='block';
-    errBox.textContent='We couldn\u2019t submit your induction ('+((e&&e.message)||'connection error')+'). Please check your connection and press Complete induction again.';
-    window.scrollTo(0,0);
-  }
+    res=await fetch(FN+'submit-induction',{method:'POST',headers:pubHeaders(),body:fd});
+  }catch(netErr){submitting=false;ok.style.display='none';nextBtn.disabled=false;submitError(true);return}
+  let out={};try{out=await res.json()}catch(e){out={}}
+  if(!res.ok||!out.ok){submitting=false;ok.style.display='none';nextBtn.disabled=false;submitError(false);return}
+  const rec={indId:out.induction_ref,verification_token:out.verification_token,first:d.first,last:d.last,mobile:digits(d.mobile),email:d.email,company:d.company,type:d.type,date:new Date(out.completed_at||Date.now()),validUntil:out.valid_until,status:out.status||'current',photo:photoData};
+  lastRec=rec;submitting=false;ok.style.display='none';$('#ab-note').textContent='';fillPass(rec);showStep(5);toast('Induction submitted');
+}
+function submitError(offline){
+  const errBox=$('#quiz-err');errBox.className='quiz-msg err';errBox.style.display='block';
+  errBox.innerHTML=offline?'<b>We could not connect to Sydney Markets.</b><br>Your induction details are still here. Check your internet connection, then press Complete induction to try again.':'<b>We could not save your induction.</b><br>Your details have not been cleared. Please press Complete induction to try again.';
+  $('#ab-note').textContent='Press Complete induction to try again.';
+  announce(offline?'Could not connect. Please try again.':'Could not save. Please try again.');
+  window.scrollTo(0,0);
 }
 function fillPass(r){
   const ph=$('#p-photo');if(r.photo){ph.src=r.photo;ph.style.display='block'}else{ph.style.display='none'}
@@ -861,7 +886,7 @@ function fillPass(r){
   $('#p-date').textContent=r.date?fmtDateTime(r.date):'';
   $('#p-exp').textContent=r.validUntil?fmtDate(new Date(r.validUntil)):'';
   $('#p-ref').textContent=r.indId||'';
-  $('#s-email').textContent='Sent to '+r.email;$('#s-sms').textContent='Sent to '+fmtMobile(r.mobile);
+  $('#s-email').textContent=r.email;$('#s-sms').textContent=fmtMobile(r.mobile);
   const qr=$('#p-qr');qr.innerHTML='';
   const vurl='https://www.sml-inductions.app/?verify='+encodeURIComponent(r.verification_token||'');
   try{if(window.QRCode&&r.verification_token){new QRCode(qr,{text:vurl,width:104,height:104,colorDark:'#020405',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M})}else{$('#p-qr-note').textContent='Induction reference: '+(r.indId||'')}}catch(e){}
@@ -1010,7 +1035,7 @@ function openDetail(r){
   const answers=(ans&&ans.length)?QUIZ.map((q,i)=>{const given=ans[i];const ok=given===q.correct;return '<div class="ans '+(ok?'ok':'no')+'"><div class="mk">'+(ok?'<svg viewBox="0 0 24 24" fill="none" stroke="'+C.greenDark+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="'+C.orange+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>')+'</div><div><div class="qtxt">'+q.q+'</div><div class="given">First answer: '+(given!=null?q.opts[given]:'')+(ok?'':' · correct: '+q.opts[q.correct])+'</div></div></div>'}).join(''):'';
   const scoreChip=(sc!=null)?'<span class="score-pill '+scoreClass(sc)+'">First-attempt score '+sc+'/'+QUIZ.length+'</span>':'';
   const revBtn=(r.id&&valid)?'<div style="margin-top:18px"><button class="btn btn-ghost" style="border-color:'+C.orange+';color:'+C.orange+'" onclick="revokeInduction(\''+r.id+'\')">Revoke induction</button></div>':'';
-  $('#modal-root').innerHTML='<div class="modal" onclick="if(event.target===this)closeDetail()"><div class="sheet"><div class="sheet-head"><div class="idblock"><span id="detail-ava">'+avatarHTML(r,64)+'</span><div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'')+'</div></div></div><button class="close" onclick="closeDetail()">✕</button></div><div class="sheet-body"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="badge '+si.cls+'">'+si.label+'</span>'+scoreChip+'</div><div class="mini-grid"><div><div class="k">Mobile</div><div class="v">'+(r.mobile?fmtMobile(r.mobile):'')+'</div></div><div><div class="k">Email</div><div class="v" style="font-size:.85rem">'+(r.email||'')+'</div></div><div><div class="k">Inductee type</div><div class="v" style="font-size:.85rem">'+(r.type||'')+'</div></div><div><div class="k">Completed</div><div class="v">'+cd+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+vu+'</div></div><div><div class="k">Attempts</div><div class="v">'+(r.attempts||1)+'</div></div><div><div class="k">Reference</div><div class="v">'+(r.indId||'')+'</div></div><div><div class="k">Version</div><div class="v" style="font-size:.78rem">'+(r.version||'')+'</div></div></div>'+((ans&&ans.length)?('<div class="ans-h">Question responses (first attempt)</div>'+answers):'')+revBtn+'</div></div></div>';
+  $('#modal-root').innerHTML='<div class="modal" onclick="if(event.target===this)closeDetail()"><div class="sheet"><div class="sheet-head"><div class="idblock"><span id="detail-ava">'+avatarHTML(r,64)+'</span><div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'')+'</div></div></div><button class="close" onclick="closeDetail()" aria-label="Close">✕</button></div><div class="sheet-body"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="badge '+si.cls+'">'+si.label+'</span>'+scoreChip+'</div><div class="mini-grid"><div><div class="k">Mobile</div><div class="v">'+(r.mobile?fmtMobile(r.mobile):'')+'</div></div><div><div class="k">Email</div><div class="v" style="font-size:.85rem">'+(r.email||'')+'</div></div><div><div class="k">Inductee type</div><div class="v" style="font-size:.85rem">'+(r.type||'')+'</div></div><div><div class="k">Completed</div><div class="v">'+cd+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+vu+'</div></div><div><div class="k">Attempts</div><div class="v">'+(r.attempts||1)+'</div></div><div><div class="k">Reference</div><div class="v">'+(r.indId||'')+'</div></div><div><div class="k">Version</div><div class="v" style="font-size:.78rem">'+(r.version||'')+'</div></div></div>'+((ans&&ans.length)?('<div class="ans-h">Question responses (first attempt)</div>'+answers):'')+revBtn+'</div></div></div>';
   setDetailPhoto(r,r.photo||null);
 }
 function closeDetail(){$('#modal-root').innerHTML=''}
@@ -1059,9 +1084,9 @@ function renderPublicVerify(d){
   const vu=(has&&d.valid_until)?('<div class="pv-vu">Valid until '+fmtDate(new Date(d.valid_until))+'</div>'):'';
   const ref=d&&(d.induction_ref||d.indId);const last4=d&&d.mobile_last4;
   const idRow=(has&&ref)?('<div class="pv-vrow"><span class="pv-vk">Induction ID</span><span class="pv-vv">'+ref+'</span></div>'):'';
-  const mobRow=(has&&last4)?('<div class="pv-vrow pv-vmob"><span class="pv-vk">Mobile verification</span><span class="pv-vv">Mobile ends in '+last4+'</span></div>'):'';
+  const mobRow=(has&&last4)?('<div class="pv-vrow pv-vmob"><span class="pv-vk">Mobile ending</span><span class="pv-vv">'+last4+'</span></div>'):'';
   const verify=(idRow||mobRow)?('<div class="pv-verify">'+idRow+mobRow+'</div>'):'';
-  const instruct=(has&&last4)?'<div class="pv-instruct">Ask the inductee to state their mobile number to confirm their identity.</div>':'';
+  const instruct=(has&&last4)?'<div class="pv-instruct">Ask the inductee to state their mobile number to help confirm their identity.</div>':'';
   const details=has?('<div class="pv-name">'+name+'</div><div class="pv-meta">'+meta+'</div>'+vu+verify+instruct):'';
   pv.innerHTML='<div class="pv-wrap"><div class="pv-band"></div><div class="pv-inner"><div class="pv-brand">Sydney Markets · Site Safety Verification</div>'+photo+'<div class="pv-status '+m.cls+'">'+m.t+'</div><div class="pv-sub">'+m.sub+'</div>'+details+'<a class="pv-home" href="/">Open Sydney Markets Safety Induction</a></div></div>';
 }
