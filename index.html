@@ -36,7 +36,7 @@ input,select{font-family:inherit}
 .mode-switch button{border:none;background:transparent;color:#cfcdc4;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;border-radius:999px;transition:.18s;white-space:nowrap}
 .mode-switch button.on{background:#fff;color:var(--black)}
 
-.wrap{max-width:600px;margin:0 auto;padding:26px 18px calc(150px + env(safe-area-inset-bottom))}
+.wrap{max-width:600px;margin:0 auto;padding:22px 18px calc(120px + env(safe-area-inset-bottom))}
 .eyebrow{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--green-dark);display:inline-flex;align-items:center;gap:9px}
 .eyebrow::before{content:"";width:22px;height:3px;border-radius:2px;background:var(--band)}
 h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;line-height:1.02;margin:14px 0 0;text-transform:uppercase}
@@ -84,7 +84,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
 .btn-ghost:hover{border-color:var(--ink)}
 .btn-lg{width:100%;padding:17px}
 
-.actionbar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(246,244,238,.92);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:12px 18px calc(12px + env(safe-area-inset-bottom))}
+.actionbar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:2px solid var(--line-2);box-shadow:0 -6px 20px rgba(2,4,5,.1);padding:14px 18px calc(14px + env(safe-area-inset-bottom))}
 .actionbar .inner{max-width:600px;margin:0 auto;display:flex;gap:12px;align-items:center}
 .actionbar .back{flex:none}
 .actionbar .next{flex:1}
@@ -96,7 +96,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
 .cam-empty{color:#8f8d84;font-weight:700;font-size:.85rem;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;padding:24px;z-index:2}
 .cam-empty svg{width:38px;height:38px;opacity:.6}
 .cam-ring{position:absolute;inset:0;border:3px solid rgba(255,255,255,.15);border-radius:16px;pointer-events:none;z-index:3}
-.cam-controls{display:flex;gap:10px;justify-content:center;margin-top:18px}
+.cam-controls{display:flex;flex-direction:column;gap:10px;margin-top:18px}
 .shutter{width:64px;height:64px;border-radius:50%;border:4px solid var(--green);background:#fff;display:grid;place-items:center;transition:.14s}
 .shutter:hover{transform:scale(1.05)}
 .shutter i{width:44px;height:44px;border-radius:50%;background:var(--green)}
@@ -106,7 +106,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
 .slide-stage{position:relative;overflow:hidden;border-radius:16px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}
 .slide-topbar{height:6px;background:var(--line-2);position:relative}
 .slide-topbar i{position:absolute;left:0;top:0;bottom:0;width:16.6%;background:var(--band);transition:width .4s ease}
-.slide{padding:24px 24px 26px;display:none;min-height:340px;max-height:56dvh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.slide{padding:24px 24px 26px;display:none;min-height:340px}
 .slide.on{display:flex;flex-direction:column;animation:rise .35s ease both}
 .slide-head{display:flex;justify-content:flex-start;margin-bottom:18px}
 .slide-num{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:6px 13px;border-radius:99px}
@@ -499,7 +499,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
           <div class="cam-ring"></div>
         </div>
         <div class="cam-controls">
-          <button class="shutter hidden" id="btn-capture" onclick="capturePhoto()" aria-label="Capture photo"><i></i></button>
+          <button class="btn btn-primary btn-lg hidden" id="btn-capture" onclick="capturePhoto()" style="width:100%"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Take photo</button>
           <button class="btn btn-ghost hidden" id="btn-retake" onclick="retakePhoto()" style="padding:13px 22px">Retake</button>
         </div>
         <input id="cam-file" type="file" accept="image/*" capture="user" class="hidden" onchange="onFilePhoto(event)">
@@ -509,7 +509,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
 
     <div class="panel hidden" id="step-2">
       <div class="step-head"><div class="k">Step 3 of 5</div><h2>Safety briefing</h2><p>Read the following eleven (11) slides to understand the on-site safety requirements. You will then complete a series of multiple-choice questions to receive your annual induction certification.</p></div>
-      <div class="slide-stage"><div class="slide-topbar"><i id="slide-fill"></i></div><div class="slide-nav"><button class="snav" id="s-prev" aria-label="Previous page" onclick="slidePrev()">‹</button><div class="dots" id="dots"></div><button class="snav" id="s-next" aria-label="Next page" onclick="slideNext()">›</button></div><div id="slides"></div></div>
+      <div class="slide-stage"><div class="slide-topbar"><i id="slide-fill"></i></div><div class="slide-nav"><div class="dots" id="dots"></div></div><div id="slides"></div></div>
       <div class="slide-progresstext" id="slide-count"></div>
     </div>
 
@@ -723,12 +723,12 @@ function showStep(n){
   back.classList.toggle('hidden',n===0);note.textContent='';
   if(n===0){renderStep0()}
   if(n===1){next.textContent='Continue';initPhoto()}
-  if(n===2){next.textContent='Continue';renderSlides();refreshSlideGate()}
+  if(n===2){renderSlides();refreshSlideGate()}
   if(n===3){next.textContent='Continue';initVideo();refreshVideoGate()}
   if(n===4){qIdx=0;renderQuiz();refreshQuizGate()}
 }
-function stepNext(){if($('#btn-next').disabled)return;if(step===0){if(sub0===0){sub0=1;renderStep0();return}}if(step===4){if(qIdx<QUIZ.length-1){qIdx++;renderQuiz();refreshQuizGate();window.scrollTo(0,0);return}submitInduction();return}showStep(step+1)}
-function stepBack(){if(step===0){if(sub0===1){sub0=0;renderStep0();return}return}if(step===1){sub0=1;showStep(0);return}if(step===4&&qIdx>0){qIdx--;renderQuiz();refreshQuizGate();window.scrollTo(0,0);return}if(step>0)showStep(step-1)}
+function stepNext(){if($('#btn-next').disabled)return;if(step===0){if(sub0===0){sub0=1;renderStep0();return}}if(step===2){if(slideIdx<SLIDES.length-1){slideNext();window.scrollTo(0,0);return}showStep(3);return}if(step===4){if(qIdx<QUIZ.length-1){qIdx++;renderQuiz();refreshQuizGate();window.scrollTo(0,0);return}submitInduction();return}showStep(step+1)}
+function stepBack(){if(step===0){if(sub0===1){sub0=0;renderStep0();return}return}if(step===1){sub0=1;showStep(0);return}if(step===2&&slideIdx>0){slidePrev();window.scrollTo(0,0);return}if(step===4&&qIdx>0){qIdx--;renderQuiz();refreshQuizGate();window.scrollTo(0,0);return}if(step>0)showStep(step-1)}
 
 document.addEventListener('input',e=>{if(['f-first','f-last','f-mobile','f-email','f-company'].includes(e.target.id))refreshDetailsGate()});
 ['change','blur','focusout','animationstart'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target&&['f-first','f-last','f-mobile','f-email','f-company'].includes(e.target.id))refreshDetailsGate()},true));
@@ -773,15 +773,14 @@ function refreshPhotoGate(){if(step!==1)return;$('#btn-next').disabled=!photoDat
 
 function renderSlides(){
   $('#slides').innerHTML=SLIDES.map((s,i)=>'<div class="slide '+(s.hazard?'hazard':'')+' '+(i===slideIdx?'on':'')+'" data-i="'+i+'"><div class="slide-head"><span class="slide-num" style="background:'+s.color+'1f;color:'+s.color+'">Slide '+(i+1)+' of '+SLIDES.length+' · Safety briefing</span></div><div class="titlerow"><div class="ico" style="background:'+s.color+'22;color:'+s.color+'"><svg viewBox="0 0 24 24" fill="none" stroke="'+s.color+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICONS[s.ico]+'</svg></div><h3>'+s.title+'</h3></div><ul class="pts">'+s.pts.map(p=>'<li>'+p+'</li>').join('')+'</ul>'+(s.callout?'<div class="callout">'+s.callout+'</div>':'')+'</div>').join('');
-  $('#dots').innerHTML=SLIDES.map((_,i)=>'<b class="'+(seen.has(i)?'seen':'')+' '+(i===slideIdx?'here':'')+'" onclick="slideGo('+i+')"></b>').join('');
+  $('#dots').innerHTML=SLIDES.map((_,i)=>'<b class="'+(seen.has(i)?'seen':'')+' '+(i===slideIdx?'here':'')+'"></b>').join('');
   $('#slide-fill').style.width=((slideIdx+1)/SLIDES.length*100)+'%';
-  $('#s-prev').disabled=slideIdx===0;$('#s-next').disabled=slideIdx===SLIDES.length-1;
-  $('#slide-count').textContent=seen.size+' of '+SLIDES.length+' slides viewed';
+    $('#slide-count').textContent=seen.size+' of '+SLIDES.length+' slides viewed';
 }
 function slideGo(i){slideIdx=Math.max(0,Math.min(SLIDES.length-1,i));seen.add(slideIdx);renderSlides();refreshSlideGate()}
 function slideNext(){if(slideIdx<SLIDES.length-1)slideGo(slideIdx+1)}
 function slidePrev(){if(slideIdx>0)slideGo(slideIdx-1)}
-function refreshSlideGate(){if(step!==2)return;const all=seen.size===SLIDES.length;$('#btn-next').disabled=!all;$('#ab-note').textContent=all?'All slides viewed — you can continue.':'View all slides to continue ('+(SLIDES.length-seen.size)+' left).'}
+function refreshSlideGate(){if(step!==2)return;$('#btn-next').disabled=false;$('#btn-next').textContent=(slideIdx===SLIDES.length-1)?'Continue':'Next';$('#ab-note').textContent='Slide '+(slideIdx+1)+' of '+SLIDES.length}
 let tsx=0;
 document.addEventListener('touchstart',e=>{tsx=e.changedTouches[0].clientX},{passive:true});
 document.addEventListener('touchend',e=>{if(step!==2)return;const dx=e.changedTouches[0].clientX-tsx;if(dx<-40)slideNext();if(dx>40)slidePrev()},{passive:true});
@@ -814,7 +813,7 @@ function chooseQuiz(qi,oi){
   $$('.q[data-q="'+qi+'"] .opt').forEach(el=>{el.classList.remove('chosen','wrong','right');if(+el.dataset.opt===oi)el.classList.add(oi===correct?'chosen':'wrong')});
   refreshQuizGate();
 }
-function refreshQuizGate(){if(step!==4)return;const q=QUIZ[qIdx];const ok=quizChosen[qIdx]===q.correct;const picked=quizChosen[qIdx]!==undefined;$('#btn-next').disabled=!ok;$('#btn-next').textContent=(qIdx===QUIZ.length-1)?'Complete induction':'Continue';$('#ab-note').textContent=ok?'Correct — you can continue.':(picked?'Not quite — choose the correct answer to continue.':'Select your answer.')}
+function refreshQuizGate(){if(step!==4)return;const q=QUIZ[qIdx];const ok=quizChosen[qIdx]===q.correct;const picked=quizChosen[qIdx]!==undefined;$('#btn-next').disabled=!ok;$('#btn-next').textContent=(qIdx===QUIZ.length-1)?'Complete induction':'Next';$('#ab-note').textContent=ok?'Correct — you can continue.':(picked?'Not quite — choose the correct answer to continue.':'Select your answer.')}
 
 async function submitInduction(){
   quizAttempts++;
