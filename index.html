@@ -441,6 +441,10 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
     /* one-question-per-screen */
     #quiz .q{border-bottom:none;padding-bottom:0;margin-bottom:0}
     #quiz .qt{font-size:1.15rem;line-height:1.4}
+  
+    /* Next = dark green, Continue/Complete = brand green */
+    .btn-primary.is-next:not(:disabled){background:var(--green-dark)}
+    .btn-primary.is-next:not(:disabled):hover{background:var(--black)}
   </style>
 </head>
 <body>
@@ -672,6 +676,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 let session=null,ADMIN_ROWS=[],lastFound=null,ADMIN_TS=0;
 function pubHeaders(){return {apikey:SB_KEY}}
 function authHeaders(token){return {apikey:SB_KEY,Authorization:'Bearer '+token}}
+function toJpeg(src,cb){const img=new Image();img.onload=function(){let w=img.naturalWidth||img.width||480,ht=img.naturalHeight||img.height||600;const max=1000;const s=Math.min(1,max/Math.max(w,ht));w=Math.round(w*s);ht=Math.round(ht*s);const cv=document.createElement('canvas');cv.width=w;cv.height=ht;const cx=cv.getContext('2d');cx.drawImage(img,0,0,w,ht);try{cb(cv.toDataURL('image/jpeg',0.82))}catch(e){cb(src)}};img.onerror=function(){cb(src)};img.src=src}
 function dataURLtoBlob(u){const p=u.split(',');const mime=(p[0].match(/:(.*?);/)||[])[1]||'image/jpeg';const bin=atob(p[1]);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:mime})}
 function norm(r){const first=r.first_name||r.first||'';const last=r.last_name||r.last||'';const nm=r.name||((first+' '+last).trim());return {id:r.id,indId:r.induction_ref||r.ref||'',first:first||(nm.split(' ')[0]||''),last:last||(nm.split(' ').slice(1).join(' ')||''),name:nm||'',company:r.company||'',type:r.inductee_type||r.type||'',mobile:r.mobile||'',email:r.email||'',score:(r.score!=null?r.score:null),attempts:r.attempts,answers:r.answers,completed_at:r.completed_at,valid_until:r.valid_until,status:r.status||'current',photo:r.photo_url||null,version:r.induction_version||r.version||''}}
 function stInfo(s){if(s==='current')return{label:'Valid',cls:'valid',color:'#30642D'};if(s==='revoked')return{label:'Revoked',cls:'exp',color:'#E73E10'};if(s==='expired')return{label:'Expired',cls:'exp',color:'#E73E10'};return{label:'Not found',cls:'exp',color:'#6f6d63'}}
@@ -707,11 +712,12 @@ let slideIdx=0,seen=new Set([0]);
 let videoWatched=false;
 let quizChosen={},quizAttempts=0,firstAnswers=null;
 let photoData=null,camStream=null,camReady=false;
-let chosenType=null;let sub0=0,qIdx=0;
+let chosenType=null;let sub0=0,qIdx=0,quizGraded=false;
 let lastRec=null;
 
 function renderRail(){$('#rail').innerHTML=STEPS.map((s,i)=>{const cls=i<step?'done':(i===step?'active':'');return '<div class="seg '+cls+'"><div class="bar"><i></i></div><div class="lab">'+s+'</div></div>'}).join('')}
 
+function setNext(t){const b=document.getElementById('btn-next');if(!b)return;b.textContent=t;b.classList.toggle('is-next',t==='Next')}
 function showStep(n){
   stopCamera();
   step=n;
@@ -722,9 +728,9 @@ function showStep(n){
   if(n===5){bar.classList.add('hidden');window.scrollTo(0,0);requestAnimationFrame(()=>window.scrollTo(0,0));setTimeout(()=>window.scrollTo(0,0),60);return}else bar.classList.remove('hidden');
   back.classList.toggle('hidden',n===0);note.textContent='';
   if(n===0){renderStep0()}
-  if(n===1){next.textContent='Continue';initPhoto()}
+  if(n===1){setNext('Continue');initPhoto()}
   if(n===2){renderSlides();refreshSlideGate()}
-  if(n===3){next.textContent='Continue';initVideo();refreshVideoGate()}
+  if(n===3){setNext('Continue');initVideo();refreshVideoGate()}
   if(n===4){qIdx=0;renderQuiz();refreshQuizGate()}
 }
 function stepNext(){if($('#btn-next').disabled)return;if(step===0){if(sub0===0){sub0=1;renderStep0();return}}if(step===2){if(slideIdx<SLIDES.length-1){slideNext();window.scrollTo(0,0);return}showStep(3);return}if(step===4){if(qIdx<QUIZ.length-1){qIdx++;renderQuiz();refreshQuizGate();window.scrollTo(0,0);return}submitInduction();return}showStep(step+1)}
@@ -737,7 +743,7 @@ function detailsValidA(){const d=getDetails();return d.first&&d.last&&isValidMob
 function detailsValidB(){const d=getDetails();return d.company&&chosenType}
 function detailsValid(){return detailsValidA()&&detailsValidB()}
 function refreshDetailsGate(){if(step!==0)return;$('#btn-next').disabled=sub0===0?!detailsValidA():!detailsValidB()}
-function renderStep0(){renderPtypeChips();$('#s0a').classList.toggle('hidden',sub0!==0);$('#s0b').classList.toggle('hidden',sub0!==1);$('#btn-back').classList.toggle('hidden',sub0===0);$('#btn-next').textContent='Continue';refreshDetailsGate();setTimeout(refreshDetailsGate,250);setTimeout(refreshDetailsGate,800);window.scrollTo(0,0)}
+function renderStep0(){renderPtypeChips();$('#s0a').classList.toggle('hidden',sub0!==0);$('#s0b').classList.toggle('hidden',sub0!==1);$('#btn-back').classList.toggle('hidden',sub0===0);setNext('Continue');refreshDetailsGate();setTimeout(refreshDetailsGate,250);setTimeout(refreshDetailsGate,800);window.scrollTo(0,0)}
 
 function initPhoto(){applyPhotoUI();startCamera()}
 async function startCamera(){
@@ -761,14 +767,15 @@ function applyPhotoUI(){
   refreshPhotoGate();
 }
 function capturePhoto(){
-  const v=$('#cam-video');const w=v.videoWidth||480,h=v.videoHeight||600;
+  const v=$('#cam-video');const vw=v.videoWidth||480,vh=v.videoHeight||600;
+  const max=1000,sc=Math.min(1,max/Math.max(vw,vh));const w=Math.round(vw*sc),h=Math.round(vh*sc);
   const cv=document.createElement('canvas');cv.width=w;cv.height=h;const cx=cv.getContext('2d');
   cx.translate(w,0);cx.scale(-1,1);cx.drawImage(v,0,0,w,h);
   photoData=cv.toDataURL('image/jpeg',0.82);
   stopCamera();applyPhotoUI();
 }
 function retakePhoto(){photoData=null;applyPhotoUI();startCamera()}
-function onFilePhoto(e){const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{photoData=rd.result;stopCamera();applyPhotoUI()};rd.readAsDataURL(f)}
+function onFilePhoto(e){const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{toJpeg(rd.result,function(d){photoData=d;stopCamera();applyPhotoUI()})};rd.readAsDataURL(f)}
 function refreshPhotoGate(){if(step!==1)return;$('#btn-next').disabled=!photoData;$('#ab-note').textContent=photoData?'Photo captured — you can continue.':'Take or upload a photo to continue.'}
 
 function renderSlides(){
@@ -780,7 +787,7 @@ function renderSlides(){
 function slideGo(i){slideIdx=Math.max(0,Math.min(SLIDES.length-1,i));seen.add(slideIdx);renderSlides();refreshSlideGate()}
 function slideNext(){if(slideIdx<SLIDES.length-1)slideGo(slideIdx+1)}
 function slidePrev(){if(slideIdx>0)slideGo(slideIdx-1)}
-function refreshSlideGate(){if(step!==2)return;$('#btn-next').disabled=false;$('#btn-next').textContent=(slideIdx===SLIDES.length-1)?'Continue':'Next';$('#ab-note').textContent='Slide '+(slideIdx+1)+' of '+SLIDES.length}
+function refreshSlideGate(){if(step!==2)return;$('#btn-next').disabled=false;setNext((slideIdx===SLIDES.length-1)?'Continue':'Next');$('#ab-note').textContent='Slide '+(slideIdx+1)+' of '+SLIDES.length}
 let tsx=0;
 document.addEventListener('touchstart',e=>{tsx=e.changedTouches[0].clientX},{passive:true});
 document.addEventListener('touchend',e=>{if(step!==2)return;const dx=e.changedTouches[0].clientX-tsx;if(dx<-40)slideNext();if(dx>40)slidePrev()},{passive:true});
@@ -802,25 +809,24 @@ function refreshVideoGate(){if(step!==3)return;$('#btn-next').disabled=!videoWat
 
 function renderQuiz(){
   const qi=qIdx,q=QUIZ[qi],chosen=quizChosen[qi];
-  $('#quiz').innerHTML='<div class="q" data-q="'+qi+'"><div class="qn">Question '+(qi+1)+' of '+QUIZ.length+'</div><div class="qt">'+q.q+'</div>'+q.opts.map((o,oi)=>{let cls='opt';if(chosen===oi)cls+=(oi===q.correct?' chosen':' wrong');return '<label class="'+cls+'" data-opt="'+oi+'"><input type="radio" name="q'+qi+'" '+(chosen===oi?'checked':'')+' onchange="chooseQuiz('+qi+','+oi+')"><span>'+o+'</span></label>'}).join('')+'</div>';
+  $('#quiz').innerHTML='<div class="q" data-q="'+qi+'"><div class="qn">Question '+(qi+1)+' of '+QUIZ.length+'</div><div class="qt">'+q.q+'</div>'+q.opts.map((o,oi)=>{let cls='opt';if(chosen===oi)cls+=(quizGraded?(oi===q.correct?' chosen':' wrong'):' chosen');return '<label class="'+cls+'" data-opt="'+oi+'"><input type="radio" name="q'+qi+'" '+(chosen===oi?'checked':'')+' onchange="chooseQuiz('+qi+','+oi+')"><span>'+o+'</span></label>'}).join('')+'</div>';
   $('#quiz-err').style.display='none';$('#quiz-ok').style.display='none';
 }
 function chooseQuiz(qi,oi){
   if(firstAnswers===null)firstAnswers=QUIZ.map(()=>undefined);
   if(firstAnswers[qi]===undefined)firstAnswers[qi]=oi;
-  const correct=QUIZ[qi].correct;quizChosen[qi]=oi;
-  if(oi!==correct)quizAttempts++;
-  $$('.q[data-q="'+qi+'"] .opt').forEach(el=>{el.classList.remove('chosen','wrong','right');if(+el.dataset.opt===oi)el.classList.add(oi===correct?'chosen':'wrong')});
+  quizChosen[qi]=oi;const correct=QUIZ[qi].correct;
+  $$('.q[data-q="'+qi+'"] .opt').forEach(el=>{el.classList.remove('chosen','wrong','right');if(+el.dataset.opt===oi)el.classList.add(quizGraded?(oi===correct?'chosen':'wrong'):'chosen')});
   refreshQuizGate();
 }
-function refreshQuizGate(){if(step!==4)return;const q=QUIZ[qIdx];const ok=quizChosen[qIdx]===q.correct;const picked=quizChosen[qIdx]!==undefined;$('#btn-next').disabled=!ok;$('#btn-next').textContent=(qIdx===QUIZ.length-1)?'Complete induction':'Next';$('#ab-note').textContent=ok?'Correct — you can continue.':(picked?'Not quite — choose the correct answer to continue.':'Select your answer.')}
+function refreshQuizGate(){if(step!==4)return;const q=QUIZ[qIdx];const picked=quizChosen[qIdx]!==undefined;$('#btn-next').disabled=!picked;setNext((qIdx===QUIZ.length-1)?'Complete induction':'Next');let note;if(!picked){note='Select your answer to continue.'}else if(quizGraded&&quizChosen[qIdx]!==q.correct){note='That answer is not correct. Choose another.'}else{note='Question '+(qIdx+1)+' of '+QUIZ.length}$('#ab-note').textContent=note}
 
 async function submitInduction(){
   quizAttempts++;
   if(!firstAnswers)firstAnswers=QUIZ.map((q,i)=>quizChosen[i]);
   let wrong=[];QUIZ.forEach((q,i)=>{if(quizChosen[i]!==q.correct)wrong.push(i)});
   const errBox=$('#quiz-err');
-  if(wrong.length){qIdx=wrong[0];renderQuiz();refreshQuizGate();errBox.className='quiz-msg err';errBox.style.display='block';errBox.textContent='Please answer this question correctly to complete your induction.';window.scrollTo(0,0);return}
+  if(wrong.length){quizGraded=true;qIdx=wrong[0];renderQuiz();refreshQuizGate();errBox.className='quiz-msg err';errBox.style.display='block';errBox.textContent=(wrong.length===1?'1 answer needs another look.':(wrong.length+' answers need another look.'))+' Change the highlighted answer, then continue to the end to finish. Your correct answers are kept.';window.scrollTo(0,0);return}
   errBox.style.display='none';
   const d=getDetails();const score=firstAnswers.reduce((n,a,i)=>n+(a===QUIZ[i].correct?1:0),0);
   const nextBtn=$('#btn-next');nextBtn.disabled=true;
@@ -860,7 +866,7 @@ function fillPass(r){
   const vurl='https://www.sml-inductions.app/?verify='+encodeURIComponent(r.verification_token||'');
   try{if(window.QRCode&&r.verification_token){new QRCode(qr,{text:vurl,width:104,height:104,colorDark:'#020405',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M})}else{$('#p-qr-note').textContent='Induction reference: '+(r.indId||'')}}catch(e){}
 }
-function resetInduction(){step=0;sub0=0;qIdx=0;slideIdx=0;seen=new Set([0]);videoWatched=false;quizChosen={};quizAttempts=0;firstAnswers=null;photoData=null;chosenType=null;renderPtypeChips();stopCamera();['f-first','f-last','f-mobile','f-email','f-company'].forEach(id=>$('#'+id).value='');if(player&&player.stopVideo)try{player.stopVideo()}catch(e){}$('#vbar-fill').style.width='0';$('#vbar-pct').textContent='Not started';$('#vbar-pct').className='vlocked';revealFlow();showStep(0)}
+function resetInduction(){step=0;sub0=0;qIdx=0;quizGraded=false;slideIdx=0;seen=new Set([0]);videoWatched=false;quizChosen={};quizAttempts=0;firstAnswers=null;photoData=null;chosenType=null;renderPtypeChips();stopCamera();['f-first','f-last','f-mobile','f-email','f-company'].forEach(id=>$('#'+id).value='');if(player&&player.stopVideo)try{player.stopVideo()}catch(e){}$('#vbar-fill').style.width='0';$('#vbar-pct').textContent='Not started';$('#vbar-pct').className='vlocked';revealFlow();showStep(0)}
 function finishToHome(){resetInduction();showWelcome()}
 
 function addToWallet(){toast('Wallet pass ready to wire up — Apple Wallet & Google Wallet in the next build')}
