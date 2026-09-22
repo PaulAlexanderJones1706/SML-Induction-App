@@ -426,8 +426,8 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
   
     /* password show/hide toggle */
     .pw-wrap{position:relative}
-    .pw-wrap input{padding-right:66px}
-    .pw-toggle{position:absolute;top:50%;right:7px;transform:translateY(-50%);border:none;background:transparent;color:#30642D;font-weight:800;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;padding:7px 9px;cursor:pointer;border-radius:8px;-webkit-tap-highlight-color:transparent}
+    .pw-wrap input{padding-right:76px}
+    .pw-toggle{position:absolute;top:50%;right:5px;transform:translateY(-50%);border:none;background:transparent;color:#30642D;font-weight:800;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;border-radius:8px;-webkit-tap-highlight-color:transparent;z-index:6;min-width:62px;min-height:44px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-user-select:none;user-select:none}
     .pw-toggle:hover{background:rgba(107,180,44,.12)}
     .pw-toggle:active{background:rgba(107,180,44,.2)}
   
@@ -454,7 +454,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
     .faq-q{min-height:44px}
     .close{min-width:40px;min-height:40px}
     .cam-alt button{min-height:40px}
-    .pw-toggle{min-height:36px}
+    
   
     .linklike{background:none;border:none;color:var(--green-dark);font-weight:700;font-size:.85rem;cursor:pointer;text-decoration:underline;padding:6px;min-height:36px}
     .linklike:hover{color:var(--magenta)}
@@ -590,7 +590,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
       <h2 style="font-size:1.5rem;font-weight:800;margin:10px 0 4px">Inductee database</h2>
       <p style="color:var(--muted);font-weight:500;margin:0 0 20px;font-size:.92rem">Authorised staff only. Your access level determines what you can see.</p>
       <div class="field" style="text-align:left" data-f="mail"><label for="sec-email">Email</label><input id="sec-email" type="email" placeholder="you@sydneymarkets.com.au" autocomplete="username" onkeydown="if(event.key==='Enter')secLogin()"></div>
-      <div class="field" style="text-align:left" data-f="pw"><label for="sec-pw">Password</label><div class="pw-wrap"><input id="sec-pw" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')secLogin()"><button type="button" class="pw-toggle" onclick="togglePw(this)" aria-label="Show password">Show</button></div><div class="err">Incorrect email or password</div></div>
+      <div class="field" style="text-align:left" data-f="pw"><label for="sec-pw">Password</label><div class="pw-wrap"><input id="sec-pw" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')secLogin()"><button type="button" class="pw-toggle" aria-label="Show password">Show</button></div><div class="err">Incorrect email or password</div></div>
       <p style="text-align:right;margin:-8px 0 14px"><button type="button" class="linklike" onclick="secForgot()">Forgot password?</button></p>
       <button class="btn btn-dark btn-lg" onclick="secLogin()">Sign in</button>
       <p class="staff-note">Authorised Sydney Markets staff only.</p>
@@ -618,8 +618,8 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
       <div class="eyebrow" style="justify-content:center;color:var(--magenta)">SML staff · account security</div>
       <h2 id="sp-title" style="font-size:1.5rem;font-weight:800;margin:10px 0 4px">Set your password</h2>
       <p id="sp-sub" style="color:var(--muted);font-weight:500;margin:0 0 20px;font-size:.92rem"></p>
-      <div class="field" style="text-align:left" data-f="spnew"><label for="sp-new">New password</label><div class="pw-wrap"><input id="sp-new" type="password" autocomplete="new-password" placeholder="Enter new password"><button type="button" class="pw-toggle" onclick="togglePwFor(\'sp-new\',this)" aria-label="Show password">Show</button></div></div>
-      <div class="field" style="text-align:left" data-f="spconf"><label for="sp-confirm">Confirm new password</label><div class="pw-wrap"><input id="sp-confirm" type="password" autocomplete="new-password" placeholder="Re-enter new password"><button type="button" class="pw-toggle" onclick="togglePwFor(\'sp-confirm\',this)" aria-label="Show password">Show</button></div></div>
+      <div class="field" style="text-align:left" data-f="spnew"><label for="sp-new">New password</label><div class="pw-wrap"><input id="sp-new" type="password" autocomplete="new-password" placeholder="Enter new password"><button type="button" class="pw-toggle" aria-label="Show password">Show</button></div></div>
+      <div class="field" style="text-align:left" data-f="spconf"><label for="sp-confirm">Confirm new password</label><div class="pw-wrap"><input id="sp-confirm" type="password" autocomplete="new-password" placeholder="Re-enter new password"><button type="button" class="pw-toggle" aria-label="Show password">Show</button></div></div>
       <p style="font-size:.8rem;color:var(--muted);font-weight:600;margin:-6px 0 16px">Use at least 8 characters, including a letter and a number.</p>
       <div class="quiz-msg err" id="sp-err" role="alert" style="display:none;margin-bottom:12px"></div>
       <button class="btn btn-dark btn-lg" id="sp-save" onclick="savePw()">Save password</button>
@@ -942,7 +942,10 @@ function beginInduction(){sub0=0;revealFlow();showStep(0)}
 function renderPtypeChips(){const el=document.getElementById('f-ptype');if(!el)return;if(el.options.length<=1){el.insertAdjacentHTML('beforeend',PERSON_TYPES.map(t=>'<option value="'+t+'">'+t+'</option>').join(''))}el.value=chosenType||''}
 function onPtype(){const el=document.getElementById('f-ptype');chosenType=(el&&el.value)?el.value:null;refreshDetailsGate()}
 function selectPtype(t){chosenType=t;renderPtypeChips();refreshDetailsGate()}
-function togglePw(btn){const inp=document.getElementById('sec-pw');if(!inp)return;const show=inp.type==='password';inp.type=show?'text':'password';btn.textContent=show?'Hide':'Show';btn.setAttribute('aria-label',show?'Hide password':'Show password')}
+function pwToggleFromBtn(b){if(!b)return;const wrap=b.closest('.pw-wrap');const inp=wrap?wrap.querySelector('input'):null;if(!inp)return;const show=inp.getAttribute('type')==='password';inp.setAttribute('type',show?'text':'password');b.textContent=show?'Hide':'Show';b.setAttribute('aria-label',show?'Hide password':'Show password')}
+function togglePw(btn){pwToggleFromBtn(btn)}
+function togglePwFor(id,btn){pwToggleFromBtn(btn)}
+(function(){var last=0;function h(e){var b=(e.target&&e.target.closest)?e.target.closest('.pw-toggle'):null;if(!b)return;e.preventDefault();e.stopPropagation();var now=Date.now();if(now-last<400)return;last=now;pwToggleFromBtn(b)}document.addEventListener('click',h,true);document.addEventListener('touchend',h,{capture:true,passive:false});})();
 function goHome(){setMode('induction');finishToHome()}
 function setMode(m){if(m!=='induction')stopCamera();$('#mode-ind').classList.toggle('on',m==='induction');$('#mode-sec').classList.toggle('on',m==='security');$('#inductionView').classList.toggle('hidden',m!=='induction');$('#securityView').classList.toggle('hidden',m!=='security');window.scrollTo({top:0})}
 
@@ -970,7 +973,7 @@ async function secLogin(){
 async function secLogout(){try{await sb.auth.signOut()}catch(e){}session=null;role=null;secShow('login');$('#sec-pw').value='';$('#sec-email').value=''}
 function secShow(view){['login','forgot','setpw','dash'].forEach(v=>{const el=document.getElementById('sec-'+v);if(el)el.classList.toggle('hidden',v!==view)})}
 function enterDash(){secShow('dash');renderFAQ();applyRole();$('#sec-result').innerHTML='';$('#sec-q').value=''}
-function togglePwFor(id,btn){const inp=document.getElementById(id);if(!inp)return;const show=inp.type==='password';inp.type=show?'text':'password';btn.textContent=show?'Hide':'Show';btn.setAttribute('aria-label',show?'Hide password':'Show password')}
+
 function secForgot(){const fm=$('#fp-form');if(fm)fm.classList.remove('hidden');const n=$('#fp-note');if(n){n.classList.add('hidden');n.textContent=''}const e=$('#fp-email');if(e)e.value='';const fld=$('#sec-forgot [data-f="fpmail"]');if(fld)fld.classList.remove('show-err');secShow('forgot')}
 function backToLogin(){secShow('login')}
 async function sendReset(){
