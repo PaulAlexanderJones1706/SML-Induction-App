@@ -107,7 +107,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
 .slide-topbar{height:6px;background:var(--line-2);position:relative}
 .slide-topbar i{position:absolute;left:0;top:0;bottom:0;width:16.6%;background:var(--band);transition:width .4s ease}
 .slide{padding:24px 24px 26px;display:none;min-height:340px}
-.slide.on{display:flex;flex-direction:column;animation:rise .35s ease both}
+.slide.on{display:flex;flex-direction:column}
 .slide-head{display:flex;justify-content:flex-start;margin-bottom:18px}
 .slide-num{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:6px 13px;border-radius:99px}
 .slide .titlerow{display:flex;align-items:center;gap:16px;margin-bottom:18px;text-align:left}
@@ -531,11 +531,18 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
     .pv-home{margin-top:20px}
   
     /* Section intro screens (Safety Briefing, Knowledge Check) */
-    .intro-card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px 22px;box-shadow:var(--shadow)}
-    .intro-eyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--green-dark);margin-bottom:10px}
-    .intro-h{font-size:1.9rem;font-weight:900;letter-spacing:-.01em;line-height:1.05;margin:0 0 14px}
-    .intro-card p{color:#333;line-height:1.55;margin:0 0 12px;font-weight:500}
-    .intro-card p:last-child{margin-bottom:0}
+    .intro2{border-radius:20px;padding:34px 26px;box-shadow:var(--shadow-lg);min-height:58vh;display:flex;flex-direction:column;justify-content:center}
+    .intro2.brief{background:linear-gradient(160deg,#30642D,#224a20);color:#fff}
+    .intro2.quiz{background:linear-gradient(160deg,#F9B000,#E7900A);color:#201700}
+    .intro2.quiz p{opacity:1}
+    .intro2.quiz .intro2-eyebrow{opacity:.72}
+    .intro2-ico{width:60px;height:60px;border-radius:16px;display:grid;place-items:center;margin-bottom:20px;background:rgba(255,255,255,.16)}
+    .intro2.quiz .intro2-ico{background:rgba(0,0,0,.12)}
+    .intro2-ico svg{width:32px;height:32px}
+    .intro2-eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;opacity:.85;margin-bottom:10px}
+    .intro2 .intro-h{font-size:2.3rem;font-weight:900;letter-spacing:-.01em;line-height:1.02;margin:0 0 18px}
+    .intro2 p{line-height:1.5;margin:0 0 12px;font-weight:600;font-size:1.02rem;opacity:.97}
+    .intro2 p:last-child{margin-bottom:0}
     /* Photo screen: keep TAKE PHOTO in view on phones */
     @media(max-width:480px){
       .cam-stage{max-width:220px}
@@ -557,6 +564,18 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
       .res-grid{grid-template-columns:1fr 1fr}
       .mini-grid{grid-template-columns:1fr 1fr}
     }
+  
+    /* Slide width safety (phone): never exceed viewport, always wrap */
+    #slides{width:100%;max-width:100%}
+    .slide{width:100%;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
+    .slide .titlerow{min-width:0}
+    .slide h3{min-width:0;overflow-wrap:anywhere}
+    .slide-num{white-space:normal}
+    /* Completion: tighten proof-of-completion block */
+    .sent .line{align-items:flex-start}
+    .sent .line>div:last-child b{display:block;line-height:1.25;font-size:.95rem;margin-bottom:3px}
+    .sent .line>div:last-child>span{display:block;line-height:1.35;font-size:.84rem;color:var(--muted);font-weight:500}
+    .sent .line span span{display:inline}
   </style>
 </head>
 <body>
@@ -586,24 +605,23 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
   <div class="wrap" id="indWrap">
 
     <div class="panel hidden" id="intro-brief">
-      <div class="intro-card">
-        <div class="intro-eyebrow">Before you start</div>
+      <div class="intro2 brief">
+        <div class="intro2-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <div class="intro2-eyebrow">Before you start</div>
         <h2 class="intro-h">Safety Briefing</h2>
-        <p>You are about to view 11 information slides and 1 short video covering the key information you need to know before going on site at Sydney Markets.</p>
-        <p>This briefing is designed to help protect your safety and the safety of others.</p>
-        <p>Please take your time to read each slide carefully and watch the video. If you need assistance understanding any of the information, please ask someone to help explain it to you before continuing.</p>
-        <p>Use the Back and Continue buttons at the bottom of the screen to move through all 11 slides and the video.</p>
+        <p>You’re about to view 11 safety slides and 1 short video.</p>
+        <p>Please take your time to read each slide carefully and watch the video before continuing.</p>
+        <p>If anything is unclear, ask someone to help explain it before you proceed.</p>
       </div>
     </div>
 
     <div class="panel hidden" id="intro-quiz">
-      <div class="intro-card">
-        <div class="intro-eyebrow">Almost there</div>
+      <div class="intro2 quiz">
+        <div class="intro2-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></div>
+        <div class="intro2-eyebrow">Almost there</div>
         <h2 class="intro-h">Knowledge Check</h2>
-        <p>You will now answer a short set of questions based on the safety information you have just reviewed.</p>
-        <p>The questions are designed to confirm that you understand the key points you need to know before going on site.</p>
-        <p>If you answer a question incorrectly, don’t worry. You will be shown that question again and can keep trying until you answer it correctly.</p>
-        <p>Take your time and choose the answer you believe is correct.</p>
+        <p>You’ll now answer 10 questions based on the safety information you’ve just reviewed.</p>
+        <p>All questions must be answered correctly. If you get one wrong, you’ll have another opportunity to try again.</p>
       </div>
     </div>
 
@@ -958,10 +976,11 @@ function photoFail(){photoData=null;const el=$('#photo-err');if(el){el.style.dis
 function refreshPhotoGate(){if(step!==1)return;$('#btn-next').disabled=!photoData;$('#ab-note').textContent=photoData?'Photo captured, you can continue.':'Take or upload a photo to continue.'}
 
 function renderSlides(){
-  $('#slides').innerHTML=SLIDES.map((s,i)=>'<div class="slide '+(s.hazard?'hazard':'')+' '+(i===slideIdx?'on':'')+'" data-i="'+i+'"><div class="slide-head"><span class="slide-num" style="background:'+s.color+'1f;color:'+s.color+'">Slide '+(i+1)+' of '+SLIDES.length+' · Safety briefing</span></div><div class="titlerow"><div class="ico" style="background:'+s.color+'22;color:'+s.color+'"><svg viewBox="0 0 24 24" fill="none" stroke="'+s.color+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICONS[s.ico]+'</svg></div><h3>'+s.title+'</h3></div><ul class="pts">'+s.pts.map(p=>'<li>'+p+'</li>').join('')+'</ul>'+(s.callout?'<div class="callout">'+s.callout+'</div>':'')+'</div>').join('');
-  $('#dots').innerHTML=SLIDES.map((_,i)=>'<b class="'+(seen.has(i)?'seen':'')+' '+(i===slideIdx?'here':'')+'"></b>').join('');
+  const i=slideIdx,s=SLIDES[i];
+  $('#slides').innerHTML='<div class="slide on '+(s.hazard?'hazard':'')+'" data-i="'+i+'"><div class="slide-head"><span class="slide-num" style="background:'+s.color+'1f;color:'+s.color+'">Slide '+(i+1)+' of '+SLIDES.length+' · Safety briefing</span></div><div class="titlerow"><div class="ico" style="background:'+s.color+'22;color:'+s.color+'"><svg viewBox="0 0 24 24" fill="none" stroke="'+s.color+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICONS[s.ico]+'</svg></div><h3>'+s.title+'</h3></div><ul class="pts">'+s.pts.map(p=>'<li>'+p+'</li>').join('')+'</ul>'+(s.callout?'<div class="callout">'+s.callout+'</div>':'')+'</div>';
+  $('#dots').innerHTML=SLIDES.map((_,j)=>'<b class="'+(seen.has(j)?'seen':'')+' '+(j===slideIdx?'here':'')+'"></b>').join('');
   $('#slide-fill').style.width=((slideIdx+1)/SLIDES.length*100)+'%';
-    $('#slide-count').textContent=seen.size+' of '+SLIDES.length+' slides viewed';
+  $('#slide-count').textContent=seen.size+' of '+SLIDES.length+' slides viewed';
 }
 function slideGo(i){slideIdx=Math.max(0,Math.min(SLIDES.length-1,i));seen.add(slideIdx);renderSlides();refreshSlideGate()}
 function slideNext(){if(slideIdx<SLIDES.length-1)slideGo(slideIdx+1)}
