@@ -455,6 +455,9 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
     .close{min-width:40px;min-height:40px}
     .cam-alt button{min-height:40px}
     .pw-toggle{min-height:36px}
+  
+    .linklike{background:none;border:none;color:var(--green-dark);font-weight:700;font-size:.85rem;cursor:pointer;text-decoration:underline;padding:6px;min-height:36px}
+    .linklike:hover{color:var(--magenta)}
   </style>
 </head>
 <body>
@@ -588,13 +591,44 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
       <p style="color:var(--muted);font-weight:500;margin:0 0 20px;font-size:.92rem">Authorised staff only. Your access level determines what you can see.</p>
       <div class="field" style="text-align:left" data-f="mail"><label for="sec-email">Email</label><input id="sec-email" type="email" placeholder="you@sydneymarkets.com.au" autocomplete="username" onkeydown="if(event.key==='Enter')secLogin()"></div>
       <div class="field" style="text-align:left" data-f="pw"><label for="sec-pw">Password</label><div class="pw-wrap"><input id="sec-pw" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')secLogin()"><button type="button" class="pw-toggle" onclick="togglePw(this)" aria-label="Show password">Show</button></div><div class="err">Incorrect email or password</div></div>
+      <p style="text-align:right;margin:-8px 0 14px"><button type="button" class="linklike" onclick="secForgot()">Forgot password?</button></p>
       <button class="btn btn-dark btn-lg" onclick="secLogin()">Sign in</button>
       <p class="staff-note">Authorised Sydney Markets staff only.</p>
     </div>
   </div>
 
+  <div class="sec-wrap login hidden" id="sec-forgot">
+    <div class="card">
+      <div class="lock-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <div class="eyebrow" style="justify-content:center;color:var(--magenta)">SML staff · password reset</div>
+      <h2 style="font-size:1.5rem;font-weight:800;margin:10px 0 4px">Reset your password</h2>
+      <p style="color:var(--muted);font-weight:500;margin:0 0 20px;font-size:.92rem">Enter your staff email and we will send you a password reset link.</p>
+      <div id="fp-form">
+        <div class="field" style="text-align:left" data-f="fpmail"><label for="fp-email">Email</label><input id="fp-email" type="email" placeholder="you@sydneymarkets.com.au" autocomplete="email" onkeydown="if(event.key===\'Enter\')sendReset()"><div class="err">Enter a valid email address</div></div>
+        <button class="btn btn-dark btn-lg" id="fp-send" onclick="sendReset()">Send reset link</button>
+      </div>
+      <p id="fp-note" class="hidden" role="status" style="background:var(--ok-bg);color:var(--green-dark);font-weight:600;padding:14px 16px;border-radius:12px;font-size:.9rem;margin:4px 0 0"></p>
+      <p style="margin-top:16px"><button type="button" class="linklike" onclick="backToLogin()">Back to sign in</button></p>
+    </div>
+  </div>
+
+  <div class="sec-wrap login hidden" id="sec-setpw">
+    <div class="card">
+      <div class="lock-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <div class="eyebrow" style="justify-content:center;color:var(--magenta)">SML staff · account security</div>
+      <h2 id="sp-title" style="font-size:1.5rem;font-weight:800;margin:10px 0 4px">Set your password</h2>
+      <p id="sp-sub" style="color:var(--muted);font-weight:500;margin:0 0 20px;font-size:.92rem"></p>
+      <div class="field" style="text-align:left" data-f="spnew"><label for="sp-new">New password</label><div class="pw-wrap"><input id="sp-new" type="password" autocomplete="new-password" placeholder="Enter new password"><button type="button" class="pw-toggle" onclick="togglePwFor(\'sp-new\',this)" aria-label="Show password">Show</button></div></div>
+      <div class="field" style="text-align:left" data-f="spconf"><label for="sp-confirm">Confirm new password</label><div class="pw-wrap"><input id="sp-confirm" type="password" autocomplete="new-password" placeholder="Re-enter new password"><button type="button" class="pw-toggle" onclick="togglePwFor(\'sp-confirm\',this)" aria-label="Show password">Show</button></div></div>
+      <p style="font-size:.8rem;color:var(--muted);font-weight:600;margin:-6px 0 16px">Use at least 8 characters, including a letter and a number.</p>
+      <div class="quiz-msg err" id="sp-err" role="alert" style="display:none;margin-bottom:12px"></div>
+      <button class="btn btn-dark btn-lg" id="sp-save" onclick="savePw()">Save password</button>
+      <p style="margin-top:14px"><button type="button" id="sp-cancel" class="linklike" onclick="cancelPw()">Cancel</button></p>
+    </div>
+  </div>
+
   <div class="sec-wrap hidden" id="sec-dash">
-    <div class="sec-top"><div><div class="eyebrow">SML staff · inductee lookup</div><h1 id="dash-title">Inductee lookup</h1></div><button class="btn btn-ghost" style="padding:11px 18px" onclick="secLogout()">Sign out</button></div>
+    <div class="sec-top"><div><div class="eyebrow">SML staff · inductee lookup</div><h1 id="dash-title">Inductee lookup</h1></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn btn-ghost" style="padding:11px 18px" onclick="openChangePw()">Change password</button><button class="btn btn-ghost" style="padding:11px 18px" onclick="secLogout()">Sign out</button></div></div>
     <div class="role-banner" id="role-banner"></div>
     <div class="dash-tabs"><button id="tab-lookup" class="on" onclick="dashTab('lookup')">Inductee lookup</button><button id="tab-faq" onclick="dashTab('faq')">Staff FAQ</button></div>
 
@@ -912,7 +946,7 @@ function togglePw(btn){const inp=document.getElementById('sec-pw');if(!inp)retur
 function goHome(){setMode('induction');finishToHome()}
 function setMode(m){if(m!=='induction')stopCamera();$('#mode-ind').classList.toggle('on',m==='induction');$('#mode-sec').classList.toggle('on',m==='security');$('#inductionView').classList.toggle('hidden',m!=='induction');$('#securityView').classList.toggle('hidden',m!=='security');window.scrollTo({top:0})}
 
-let role=null;
+let role=null,pwMode=null;
 async function secLogin(){
   const email=$('#sec-email').value.trim();const pw=$('#sec-pw').value;const fld=$('#sec-login [data-f="pw"]');const errEl=fld.querySelector('.err');
   if(!email||!pw){fld.classList.add('show-err');if(errEl)errEl.textContent='Enter your email and password';return}
@@ -922,15 +956,62 @@ async function secLogin(){
     const {data,error}=await sb.auth.signInWithPassword({email:email,password:pw});
     if(error||!data||!data.session)throw new Error('Incorrect email or password');
     session=data.session;
-    const sr=await sb.from('staff').select('role').eq('user_id',data.user.id).single();
+    const sr=await sb.from('staff').select('role,active').eq('user_id',data.user.id).single();
     role=(sr&&sr.data&&sr.data.role)?sr.data.role:null;
     if(role!=='admin'&&role!=='verify'){await sb.auth.signOut();session=null;throw new Error('This account is not authorised for staff access')}
-    $('#sec-login').classList.add('hidden');$('#sec-dash').classList.remove('hidden');
-    renderFAQ();applyRole();$('#sec-result').innerHTML='';$('#sec-q').value='';
+    if(sr&&sr.data&&sr.data.active===false){await sb.auth.signOut();session=null;throw new Error('This staff account is inactive. Please contact your Sydney Markets administrator.')}
+    let mustChange=false;
+    try{const mc=await sb.from('staff').select('must_change_password').eq('user_id',data.user.id).single();if(mc&&mc.data&&mc.data.must_change_password===true)mustChange=true;}catch(e){}
+    if(mustChange){pwMode='force';setupPwScreen();secShow('setpw');}
+    else{enterDash();}
   }catch(e){fld.classList.add('show-err');if(errEl)errEl.textContent=(e&&e.message)||'Sign in failed';}
   finally{if(btn){btn.disabled=false;btn.textContent='Sign in'}}
 }
-async function secLogout(){try{await sb.auth.signOut()}catch(e){}session=null;role=null;$('#sec-dash').classList.add('hidden');$('#sec-login').classList.remove('hidden');$('#sec-pw').value='';$('#sec-email').value=''}
+async function secLogout(){try{await sb.auth.signOut()}catch(e){}session=null;role=null;secShow('login');$('#sec-pw').value='';$('#sec-email').value=''}
+function secShow(view){['login','forgot','setpw','dash'].forEach(v=>{const el=document.getElementById('sec-'+v);if(el)el.classList.toggle('hidden',v!==view)})}
+function enterDash(){secShow('dash');renderFAQ();applyRole();$('#sec-result').innerHTML='';$('#sec-q').value=''}
+function togglePwFor(id,btn){const inp=document.getElementById(id);if(!inp)return;const show=inp.type==='password';inp.type=show?'text':'password';btn.textContent=show?'Hide':'Show';btn.setAttribute('aria-label',show?'Hide password':'Show password')}
+function secForgot(){const fm=$('#fp-form');if(fm)fm.classList.remove('hidden');const n=$('#fp-note');if(n){n.classList.add('hidden');n.textContent=''}const e=$('#fp-email');if(e)e.value='';const fld=$('#sec-forgot [data-f="fpmail"]');if(fld)fld.classList.remove('show-err');secShow('forgot')}
+function backToLogin(){secShow('login')}
+async function sendReset(){
+  const el=$('#fp-email');const email=el?el.value.trim():'';const fld=$('#sec-forgot [data-f="fpmail"]');
+  if(!isValidEmail(email)){if(fld)fld.classList.add('show-err');return}
+  if(fld)fld.classList.remove('show-err');
+  const btn=$('#fp-send');if(btn){btn.disabled=true;btn.textContent='Sending\u2026'}
+  try{await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin})}catch(e){}
+  const fm=$('#fp-form');if(fm)fm.classList.add('hidden');
+  const n=$('#fp-note');if(n){n.classList.remove('hidden');n.textContent='If an account exists for that email address, a password reset email has been sent. Check your inbox and your spam folder.'}
+  if(btn){btn.disabled=false;btn.textContent='Send reset link'}
+  announce('If an account exists for that email address, a password reset email has been sent.');
+}
+function openChangePw(){pwMode='change';setupPwScreen();secShow('setpw')}
+function cancelPw(){if(pwMode==='change')secShow('dash');else secShow('login')}
+function setupPwScreen(){
+  const t=$('#sp-title'),s=$('#sp-sub'),cancel=$('#sp-cancel'),err=$('#sp-err');
+  if(pwMode==='force'){t.textContent='Set your password';s.textContent='For security, please replace your temporary password before you continue.';if(cancel)cancel.classList.add('hidden')}
+  else if(pwMode==='recovery'){t.textContent='Set a new password';s.textContent='Choose a new password for your Sydney Markets staff account.';if(cancel)cancel.classList.add('hidden')}
+  else{t.textContent='Change password';s.textContent='Update the password for your Sydney Markets staff account.';if(cancel)cancel.classList.remove('hidden')}
+  ['sp-new','sp-confirm'].forEach(id=>{const i=document.getElementById(id);if(i){i.value='';i.type='password'}});
+  $$('#sec-setpw .pw-toggle').forEach(b=>{b.textContent='Show';b.setAttribute('aria-label','Show password')});
+  if(err){err.style.display='none';err.textContent=''}
+}
+function pwReqOk(p){return (p||'').length>=8&&/[A-Za-z]/.test(p)&&/[0-9]/.test(p)}
+async function savePw(){
+  const p=$('#sp-new').value,c=$('#sp-confirm').value,err=$('#sp-err');
+  if(!pwReqOk(p)){err.style.display='block';err.textContent='Use at least 8 characters, including a letter and a number.';announce(err.textContent);return}
+  if(p!==c){err.style.display='block';err.textContent='The two passwords do not match.';announce(err.textContent);return}
+  err.style.display='none';
+  const btn=$('#sp-save');if(btn){btn.disabled=true;btn.textContent='Saving\u2026'}
+  try{
+    const {error}=await sb.auth.updateUser({password:p});
+    if(error)throw error;
+    if(pwMode==='force'){try{await sb.rpc('clear_must_change_password')}catch(e){}enterDash();toast('Password set')}
+    else if(pwMode==='change'){secShow('dash');toast('Password changed')}
+    else{try{await sb.auth.signOut()}catch(e){}session=null;role=null;secShow('login');toast('Password updated, please sign in')}
+  }catch(e){err.style.display='block';err.textContent=(e&&e.message)?e.message:'We could not update your password. Please try again.';announce('Could not update password.')}
+  finally{if(btn){btn.disabled=false;btn.textContent='Save password'}}
+}
+
 function dashTab(t){$('#tab-lookup').classList.toggle('on',t==='lookup');$('#tab-faq').classList.toggle('on',t==='faq');$('#pane-lookup').classList.toggle('hidden',t!=='lookup');$('#pane-faq').classList.toggle('hidden',t!=='faq')}
 function applyRole(){
   const admin=role==='admin';
@@ -1091,7 +1172,9 @@ function renderPublicVerify(d){
   pv.innerHTML='<div class="pv-wrap"><div class="pv-band"></div><div class="pv-inner"><div class="pv-brand">Sydney Markets · Site Safety Verification</div>'+photo+'<div class="pv-status '+m.cls+'">'+m.t+'</div><div class="pv-sub">'+m.sub+'</div>'+details+'<a class="pv-home" href="/">Open Sydney Markets Safety Induction</a></div></div>';
 }
 (function loadYT(){const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s)})();
+sb.auth.onAuthStateChange((event,sess)=>{if(event==='PASSWORD_RECOVERY'){if(sess)session=sess;setMode('security');pwMode='recovery';setupPwScreen();secShow('setpw')}});
 (function boot(){
+  if(location.hash&&location.hash.indexOf('type=recovery')>=0){setMode('security');pwMode='recovery';setupPwScreen();secShow('setpw');return;}
   const vt=new URLSearchParams(location.search).get('verify');
   if(vt){showPublicVerify(vt);return}
   showStep(0);showWelcome();
