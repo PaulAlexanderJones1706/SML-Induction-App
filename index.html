@@ -678,7 +678,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
 
     <div id="pane-lookup">
       <div class="stats admin-only" id="sec-stats"></div>
-      <div class="searchbox"><label>Search by mobile number or name</label><div class="searchrow"><input id="sec-q" type="text" placeholder="0400000000" onkeydown="if(event.key==='Enter')secSearch()"><button onclick="secSearch()">Search inductee</button></div></div>
+      <div class="searchbox"><label>Search by mobile number or name</label><div class="searchrow"><input id="sec-q" type="text" placeholder="0403 143 773" onkeydown="if(event.key==='Enter')secSearch()"><button onclick="secSearch()">Search inductee</button></div></div>
       <div class="result" id="sec-result"></div>
       <div class="admin-only">
         <div class="table-head"><h3>All inductees</h3><button class="csv" onclick="exportCSV()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg> Export CSV</button></div>
@@ -774,7 +774,7 @@ function stInfo(s){if(s==='current')return{label:'Valid',cls:'valid',color:'#306
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
 function digits(s){return (s||'').replace(/\D/g,'')}
-function fmtMobile(s){const d=digits(s);return d.length===10?d.slice(0,4)+' '+d.slice(4,7)+' '+d.slice(7):s}
+function fmtMobile(s){var d=normaliseMobile(s);if(d.length===10&&d.charAt(0)==='0')return d.slice(0,4)+' '+d.slice(4,7)+' '+d.slice(7);var raw=digits(s);return raw.length===10?raw.slice(0,4)+' '+raw.slice(4,7)+' '+raw.slice(7):s}
 function fmtDate(d){return d.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})}
 function fmtDateTime(d){return fmtDate(d)+', '+d.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'})}
 function normaliseMobile(s){let d=(s||'').replace(/\D/g,'');if(d.startsWith('0061'))d=d.slice(4);else if(d.startsWith('61')&&d.length>=11)d=d.slice(2);if(d.length===9&&d[0]==='4')d='0'+d;return d}
@@ -944,7 +944,7 @@ async function submitInduction(){
   }catch(netErr){submitting=false;ok.style.display='none';nextBtn.disabled=false;submitError(true);return}
   let out={};try{out=await res.json()}catch(e){out={}}
   if(!res.ok||!out.ok){submitting=false;ok.style.display='none';nextBtn.disabled=false;submitError(false);return}
-  const rec={indId:out.induction_ref,verification_token:out.verification_token,first:d.first,last:d.last,mobile:digits(d.mobile),email:d.email,company:d.company,type:d.type,date:new Date(out.completed_at||Date.now()),validUntil:out.valid_until,status:out.status||'current',photo:photoData};
+  const rec={indId:out.induction_ref,verification_token:out.verification_token,first:d.first,last:d.last,mobile:normaliseMobile(d.mobile),email:d.email,company:d.company,type:d.type,date:new Date(out.completed_at||Date.now()),validUntil:out.valid_until,status:out.status||'current',photo:photoData};
   lastRec=rec;submitting=false;ok.style.display='none';$('#ab-note').textContent='';fillPass(rec);showStep(5);toast('Induction submitted');
 }
 function submitError(offline){
