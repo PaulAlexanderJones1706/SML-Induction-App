@@ -710,6 +710,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
       <div class="admin-only">
         <div class="table-head"><h3>All inductees</h3><button class="csv" onclick="exportCSV()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg> Export CSV</button></div>
         <div class="tbl" id="sec-table"></div>
+        <div id="sec-loadmore" style="margin-top:12px"></div>
       </div>
     </div>
 
@@ -790,7 +791,7 @@ const SB_KEY='sb_publishable_VWbV-rEt482mj8cZY7BPPQ_IOjIH7Hy';
 const FN=SB_URL+'/functions/v1/';
 const FN_STAFF_LIST=FN+'staff-list'; // authenticated admin list (rows incl. signed photo_url)
 const sb=supabase.createClient(SB_URL,SB_KEY);
-let session=null,ADMIN_ROWS=[],lastFound=null,ADMIN_TS=0;
+let session=null,ADMIN_ROWS=[],lastFound=null,ADMIN_TS=0,ADMIN_CURSOR=null;
 function pubHeaders(){return {apikey:SB_KEY}}
 function authHeaders(token){return {apikey:SB_KEY,Authorization:'Bearer '+token}}
 function toJpeg(src,onOk,onFail){const img=new Image();img.onload=function(){try{let w=img.naturalWidth||img.width||0,ht=img.naturalHeight||img.height||0;if(!w||!ht)throw 0;const max=1000;const s=Math.min(1,max/Math.max(w,ht));w=Math.round(w*s);ht=Math.round(ht*s);const cv=document.createElement('canvas');cv.width=w;cv.height=ht;const cx=cv.getContext('2d');cx.drawImage(img,0,0,w,ht);const out=cv.toDataURL('image/jpeg',0.82);if(!out||out.length<50)throw 0;onOk(out)}catch(e){if(onFail)onFail()}};img.onerror=function(){if(onFail)onFail()};img.src=src}
@@ -1109,41 +1110,47 @@ async function renderStats(){
   }catch(e){$('#sec-stats').innerHTML='<div class="stat g"><div class="n"></div><div class="l">Stats unavailable</div></div>'}
 }
 function statusBadge(r){return isValid(r)?'<span class="badge valid"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#30642D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Valid</span>':'<span class="badge exp">Expired</span>'}
-async function fetchAdminList(){
+async function fetchAdminPage(cursor){
   try{
-    const res=await fetch(FN_STAFF_LIST,{headers:authHeaders(session&&session.access_token)});
+    let url=FN_STAFF_LIST+'?page_size=50';
+    if(cursor)url+='&cursor='+encodeURIComponent(typeof cursor==='string'?cursor:JSON.stringify(cursor));
+    const res=await fetch(url,{headers:authHeaders(session&&session.access_token)});
     if(res.ok){
       const out=await res.json().catch(()=>null);
-      const rows=Array.isArray(out)?out:((out&&(out.results||out.rows||out.data))||null);
-      if(Array.isArray(rows))return rows.map(norm);
+      const raw=Array.isArray(out)?out:((out&&(out.results||out.rows||out.data))||[]);
+      let next=null;
+      if(out&&!Array.isArray(out)){next=(out.next_cursor!==undefined?out.next_cursor:(out.nextCursor!==undefined?out.nextCursor:out.cursor));}
+      return {rows:(raw||[]).map(norm),next:next||null};
     }
   }catch(e){}
   const q=await sb.from('latest_inductions').select('*').order('completed_at',{ascending:false}).limit(500);
-  return (q.data||[]).map(norm);
+  return {rows:(q.data||[]).map(norm),next:null};
+}
+function adminRowHTML(r,i){const si=stInfo(r.status);return '<div class="trow"><div class="nmcell">'+avatarHTML(r,38)+'<div class="nm"><div class="nm-name">'+r.first+' '+r.last+'</div><div class="st"><span class="badge '+si.cls+'">'+si.label+'</span>'+(r.mobile?'<span class="mob">'+fmtMobile(r.mobile)+'</span>':'')+'</div></div></div><button class="view" onclick="openDetailRow('+i+')">View</button></div>'}
+function renderLoadMore(){const el=document.getElementById('sec-loadmore');if(!el)return;el.innerHTML=ADMIN_CURSOR?'<button class="btn btn-ghost" id="btn-loadmore" style="width:100%" onclick="loadMoreAdmin()">Load more</button>':''}
+async function loadMoreAdmin(){
+  const btn=document.getElementById('btn-loadmore');if(btn){btn.disabled=true;btn.textContent='Loading\u2026'}
+  try{
+    const start=ADMIN_ROWS.length;
+    const {rows,next}=await fetchAdminPage(ADMIN_CURSOR);
+    ADMIN_CURSOR=next;
+    if(rows.length){ADMIN_ROWS=ADMIN_ROWS.concat(rows);const frag=rows.map((r,j)=>adminRowHTML(r,start+j)).join('');const tbl=document.getElementById('sec-table');if(tbl)tbl.insertAdjacentHTML('beforeend',frag);}
+    renderLoadMore();
+  }catch(e){if(btn){btn.disabled=false;btn.textContent='Load more'}toast('Could not load more: '+((e&&e.message)||'error'))}
 }
 async function renderTable(){
   $('#sec-table').innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-weight:600">Loading records\u2026</div>';
+  const lm=document.getElementById('sec-loadmore');if(lm)lm.innerHTML='';
+  ADMIN_ROWS=[];ADMIN_CURSOR=null;
   try{
-    ADMIN_ROWS=await fetchAdminList();ADMIN_TS=Date.now();
+    const {rows,next}=await fetchAdminPage(null);
+    ADMIN_ROWS=rows;ADMIN_CURSOR=next;ADMIN_TS=Date.now();
     if(!ADMIN_ROWS.length){$('#sec-table').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-weight:600">No inductions recorded yet.</div>';return}
-    $('#sec-table').innerHTML=ADMIN_ROWS.map((r,i)=>{const si=stInfo(r.status);return '<div class="trow"><div class="nmcell">'+avatarHTML(r,38)+'<div class="nm"><div class="nm-name">'+r.first+' '+r.last+'</div><div class="st"><span class="badge '+si.cls+'">'+si.label+'</span>'+(r.mobile?'<span class="mob">'+fmtMobile(r.mobile)+'</span>':'')+'</div></div></div><button class="view" onclick="openDetailRow('+i+')">View</button></div>'}).join('');
+    $('#sec-table').innerHTML=ADMIN_ROWS.map((r,i)=>adminRowHTML(r,i)).join('');
+    renderLoadMore();
   }catch(e){$('#sec-table').innerHTML='<div style="padding:20px;text-align:center;color:var(--orange);font-weight:600">Could not load records: '+((e&&e.message)||'error')+'</div>'}
 }
-async function openDetailRow(i){
-  let row=ADMIN_ROWS[i];
-  if(row&&(Date.now()-ADMIN_TS)>480000){
-    try{
-      const fresh=await fetchAdminList();
-      if(fresh&&fresh.length){
-        const byId={};fresh.forEach(x=>{const k=x.id||x.indId;if(k)byId[k]=x});
-        ADMIN_ROWS.forEach(r0=>{const k=r0.id||r0.indId;const f0=k&&byId[k];if(f0)r0.photo=f0.photo});
-        ADMIN_TS=Date.now();
-        const nf=byId[row.id||row.indId];if(nf)row=nf;
-      }
-    }catch(e){}
-  }
-  openDetail(row);
-}
+function openDetailRow(i){openDetail(ADMIN_ROWS[i])}
 async function secSearch(){
   const q=$('#sec-q').value.trim();if(!q){$('#sec-result').innerHTML='';return}
   $('#sec-result').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted);font-weight:600">Searching\u2026</div>';
@@ -1198,15 +1205,18 @@ function openDetail(r){
 function closeDetail(){$('#modal-root').innerHTML=''}
 
 async function exportCSV(){
+  const btn=document.querySelector('.csv');const label=btn?btn.innerHTML:'';
+  if(btn){btn.disabled=true;btn.textContent='Exporting\u2026'}
   try{
-    const rows=(ADMIN_ROWS&&ADMIN_ROWS.length)?ADMIN_ROWS:await fetchAdminList();
-    const head=['Induction ref','First name','Last name','Mobile','Email','Company','Inductee type','Completed','Valid until','Status','Score','Attempts','Induction version'];
-    const body=rows.map(r=>[r.indId,r.first,r.last,r.mobile?fmtMobile(r.mobile):'',r.email||'',r.company||'',r.type||'',r.completed_at?fmtDateTime(new Date(r.completed_at)):'',r.valid_until?fmtDate(new Date(r.valid_until)):'',stInfo(r.status).label,(r.score!=null?r.score+'/'+QUIZ.length:''),r.attempts||'',r.version||'']);
-    const csv=[head].concat(body).map(row=>row.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
-    const blob=new Blob([csv],{type:'text/csv'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-    a.href=url;a.download='sml-inductees-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
-    toast('Inductee list exported to CSV');
+    const res=await fetch(FN+'export-inductions',{headers:authHeaders(session&&session.access_token)});
+    if(res.status===401||res.status===403){toast('Not authorised to export');return}
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const csv=await res.text();
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download='sml-inductions-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
+    toast('Full inductee list exported to CSV');
   }catch(e){toast('Export failed: '+((e&&e.message)||'error'))}
+  finally{if(btn){btn.disabled=false;btn.innerHTML=label}}
 }
 async function revokeInduction(id){
   if(!id)return;
