@@ -830,7 +830,9 @@ const FAQ=[
   {q:'What details do we collect, and how are they stored?',a:'The induction records a person’s name, mobile number (their unique ID), email, optional company, a photo, and their quiz result. These are held in a secure database that authorised staff access under their own login.'}
 ];
 
-const INDUCTION_VERSION='SML Site Safety Induction App v1.74';
+const INDUCTION_VERSION='v1.74'; // stored/sent to backend as induction_version (new inductions only)
+const APP_VERSION_LABEL='SML Site Safety Induction App v1.74';
+function versionLabel(v){return v==='v1.74'?APP_VERSION_LABEL:(v||'')}
 const CONTENT_VERSION='2026.02';
 const QUESTION_VERSION='2026.02';
 const PERSON_TYPES=['Contractor','Driver','Trader / Market participant','Worker / Employee','Visitor','Other'];
@@ -1010,7 +1012,7 @@ async function submitInduction(){
   submitting=true;
   const nextBtn=$('#btn-next');nextBtn.disabled=true;
   const ok=$('#quiz-ok');ok.style.display='block';ok.textContent='Saving your induction\u2026';
-  const _abn=$('#ab-note');_abn.textContent='Please don\u2019t close this screen while we complete your induction.';_abn.style.color='#d32f2f';
+  const _abn=$('#ab-note');_abn.textContent='PLEASE DON\u2019T CLOSE THIS SCREEN WHILE WE COMPLETE YOUR INDUCTION.';_abn.style.color='#d32f2f';
   announce('Saving your induction. Please do not close this page.');
   let res;
   try{
@@ -1252,7 +1254,7 @@ function openDetail(r){
   const answers=(ans&&ans.length)?QUIZ.map((q,i)=>{const given=ans[i];const ok=given===q.correct;return '<div class="ans '+(ok?'ok':'no')+'"><div class="mk">'+(ok?'<svg viewBox="0 0 24 24" fill="none" stroke="'+C.greenDark+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="'+C.orange+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>')+'</div><div><div class="qtxt">'+q.q+'</div><div class="given">First answer: '+(given!=null?q.opts[given]:'')+(ok?'':' · correct: '+q.opts[q.correct])+'</div></div></div>'}).join(''):'';
   const scoreChip=(sc!=null)?'<span class="score-pill '+scoreClass(sc)+'">First-attempt score '+sc+'/'+QUIZ.length+'</span>':'';
   const revBtn=(r.id&&valid)?'<div style="margin-top:18px"><button class="btn btn-ghost" style="border-color:'+C.orange+';color:'+C.orange+'" onclick="revokeInduction(\''+r.id+'\')">Revoke induction</button></div>':'';
-  $('#modal-root').innerHTML='<div class="modal" onclick="if(event.target===this)closeDetail()"><div class="sheet"><div class="sheet-head"><div class="idblock"><span id="detail-ava">'+avatarHTML(r,64)+'</span><div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'')+'</div></div></div><button class="close" onclick="closeDetail()" aria-label="Close">✕</button></div><div class="sheet-body"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="badge '+si.cls+'">'+si.label+'</span>'+scoreChip+'</div><div class="rec-sec"><div class="rec-h">Contact</div><div class="mini-grid"><div><div class="k">Mobile</div><div class="v v-mob">'+(r.mobile?fmtMobile(r.mobile):'')+'</div></div><div><div class="k">Email</div><div class="v v-email">'+(r.email||'')+'</div></div></div></div><div class="rec-sec"><div class="rec-h">Induction</div><div class="mini-grid"><div><div class="k">Inductee type</div><div class="v" style="font-size:.9rem">'+(r.type||'')+'</div></div><div><div class="k">Completed</div><div class="v">'+cd+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+vu+'</div></div><div><div class="k">Attempts</div><div class="v">'+(r.attempts||1)+'</div></div><div><div class="k">Reference</div><div class="v">'+(r.indId||'')+'</div></div><div><div class="k">Version</div><div class="v" style="font-size:.8rem">'+(r.version||'')+'</div></div></div></div>'+((ans&&ans.length)?('<div class="ans-h">Question responses (first attempt)</div>'+answers):'')+revBtn+'</div></div></div>';
+  $('#modal-root').innerHTML='<div class="modal" onclick="if(event.target===this)closeDetail()"><div class="sheet"><div class="sheet-head"><div class="idblock"><span id="detail-ava">'+avatarHTML(r,64)+'</span><div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'')+'</div></div></div><button class="close" onclick="closeDetail()" aria-label="Close">✕</button></div><div class="sheet-body"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="badge '+si.cls+'">'+si.label+'</span>'+scoreChip+'</div><div class="rec-sec"><div class="rec-h">Contact</div><div class="mini-grid"><div><div class="k">Mobile</div><div class="v v-mob">'+(r.mobile?fmtMobile(r.mobile):'')+'</div></div><div><div class="k">Email</div><div class="v v-email">'+(r.email||'')+'</div></div></div></div><div class="rec-sec"><div class="rec-h">Induction</div><div class="mini-grid"><div><div class="k">Inductee type</div><div class="v" style="font-size:.9rem">'+(r.type||'')+'</div></div><div><div class="k">Completed</div><div class="v">'+cd+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+vu+'</div></div><div><div class="k">Attempts</div><div class="v">'+(r.attempts||1)+'</div></div><div><div class="k">Reference</div><div class="v">'+(r.indId||'')+'</div></div><div><div class="k">Version</div><div class="v" style="font-size:.8rem">'+versionLabel(r.version)+'</div></div></div></div>'+((ans&&ans.length)?('<div class="ans-h">Question responses (first attempt)</div>'+answers):'')+revBtn+'</div></div></div>';
   setDetailPhoto(r,r.photo||null);
 }
 function closeDetail(){$('#modal-root').innerHTML=''}
