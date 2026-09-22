@@ -458,6 +458,50 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
   
     .linklike{background:none;border:none;color:var(--green-dark);font-weight:700;font-size:.85rem;cursor:pointer;text-decoration:underline;padding:6px;min-height:36px}
     .linklike:hover{color:var(--magenta)}
+  
+    /* Admin banner removed per phone pass */
+    #role-banner{display:none}
+    .sec-top .btn-ghost{padding:9px 14px;font-size:12px;min-height:40px;color:var(--muted)}
+    .sec-top .btn-ghost:hover{color:var(--ink)}
+    /* Stat colour accents (kept on all widths) */
+    .stat.g{border-top:3px solid var(--green)}
+    .stat.m{border-top:3px solid var(--magenta)}
+    .stat.a{border-top:3px solid var(--amber)}
+    /* Record detail groups */
+    .rec-sec{margin:14px 0}
+    .rec-h{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+    .sheet-body .v{min-width:0}
+    .v-email{word-break:break-word;overflow-wrap:anywhere;font-size:.9rem}
+    .v-mob{white-space:nowrap;font-variant-numeric:tabular-nums}
+    /* Phone-only staff/admin refinements (375 to 480px) */
+    @media(max-width:480px){
+      .sec-wrap{padding:16px 14px 60px}
+      .sec-top{margin-bottom:10px;align-items:center;gap:10px}
+      .sec-top h1{font-size:1.15rem}
+      .sec-top .eyebrow{font-size:10px;letter-spacing:.12em}
+      .sec-top .btn{padding:8px 12px;font-size:11px;min-height:40px;font-weight:800}
+      .dash-tabs{margin-bottom:14px}
+      .dash-tabs button{margin-right:18px;font-size:11px;padding:10px 2px}
+      .stats{grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+      .stat{padding:11px 8px;border-radius:12px;text-align:center}
+      .stat .n{font-size:1.45rem}
+      .stat .l{font-size:8.5px;letter-spacing:.03em;margin-top:4px;line-height:1.2}
+      .searchbox{padding:14px;border-radius:14px;margin-bottom:14px}
+      .searchbox label{margin-bottom:8px}
+      .searchrow input{padding:14px;font-size:1.05rem}
+      .searchrow button{padding:14px}
+      .table-head{margin:6px 0 10px}
+      .trow{padding:12px 14px;gap:10px}
+      .view{padding:8px 13px;min-height:38px}
+      .result{margin-bottom:16px}
+      .res-found{padding:16px}
+      .res-grid{grid-template-columns:1fr;gap:12px}
+      .mini-grid{grid-template-columns:1fr;gap:12px;margin:14px 0 18px}
+      .sheet-head{padding:18px 16px 0}
+      .sheet-head .name{font-size:1.25rem}
+      .sheet-body{padding:16px 16px 22px}
+      .modal .sheet{max-height:90vh;overflow-x:hidden}
+    }
   </style>
 </head>
 <body>
@@ -628,7 +672,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
   </div>
 
   <div class="sec-wrap hidden" id="sec-dash">
-    <div class="sec-top"><div><div class="eyebrow">SML staff · inductee lookup</div><h1 id="dash-title">Inductee lookup</h1></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn btn-ghost" style="padding:11px 18px" onclick="openChangePw()">Change password</button><button class="btn btn-ghost" style="padding:11px 18px" onclick="secLogout()">Sign out</button></div></div>
+    <div class="sec-top"><div><div class="eyebrow">SML staff · inductee lookup</div><h1 id="dash-title">Inductee lookup</h1></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn btn-ghost" onclick="openChangePw()">Change password</button><button class="btn btn-ghost" onclick="secLogout()">Sign out</button></div></div>
     <div class="role-banner" id="role-banner"></div>
     <div class="dash-tabs"><button id="tab-lookup" class="on" onclick="dashTab('lookup')">Inductee lookup</button><button id="tab-faq" onclick="dashTab('faq')">Staff FAQ</button></div>
 
@@ -1119,7 +1163,7 @@ function openDetail(r){
   const answers=(ans&&ans.length)?QUIZ.map((q,i)=>{const given=ans[i];const ok=given===q.correct;return '<div class="ans '+(ok?'ok':'no')+'"><div class="mk">'+(ok?'<svg viewBox="0 0 24 24" fill="none" stroke="'+C.greenDark+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="'+C.orange+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>')+'</div><div><div class="qtxt">'+q.q+'</div><div class="given">First answer: '+(given!=null?q.opts[given]:'')+(ok?'':' · correct: '+q.opts[q.correct])+'</div></div></div>'}).join(''):'';
   const scoreChip=(sc!=null)?'<span class="score-pill '+scoreClass(sc)+'">First-attempt score '+sc+'/'+QUIZ.length+'</span>':'';
   const revBtn=(r.id&&valid)?'<div style="margin-top:18px"><button class="btn btn-ghost" style="border-color:'+C.orange+';color:'+C.orange+'" onclick="revokeInduction(\''+r.id+'\')">Revoke induction</button></div>':'';
-  $('#modal-root').innerHTML='<div class="modal" onclick="if(event.target===this)closeDetail()"><div class="sheet"><div class="sheet-head"><div class="idblock"><span id="detail-ava">'+avatarHTML(r,64)+'</span><div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'')+'</div></div></div><button class="close" onclick="closeDetail()" aria-label="Close">✕</button></div><div class="sheet-body"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="badge '+si.cls+'">'+si.label+'</span>'+scoreChip+'</div><div class="mini-grid"><div><div class="k">Mobile</div><div class="v">'+(r.mobile?fmtMobile(r.mobile):'')+'</div></div><div><div class="k">Email</div><div class="v" style="font-size:.85rem">'+(r.email||'')+'</div></div><div><div class="k">Inductee type</div><div class="v" style="font-size:.85rem">'+(r.type||'')+'</div></div><div><div class="k">Completed</div><div class="v">'+cd+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+vu+'</div></div><div><div class="k">Attempts</div><div class="v">'+(r.attempts||1)+'</div></div><div><div class="k">Reference</div><div class="v">'+(r.indId||'')+'</div></div><div><div class="k">Version</div><div class="v" style="font-size:.78rem">'+(r.version||'')+'</div></div></div>'+((ans&&ans.length)?('<div class="ans-h">Question responses (first attempt)</div>'+answers):'')+revBtn+'</div></div></div>';
+  $('#modal-root').innerHTML='<div class="modal" onclick="if(event.target===this)closeDetail()"><div class="sheet"><div class="sheet-head"><div class="idblock"><span id="detail-ava">'+avatarHTML(r,64)+'</span><div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'')+'</div></div></div><button class="close" onclick="closeDetail()" aria-label="Close">✕</button></div><div class="sheet-body"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="badge '+si.cls+'">'+si.label+'</span>'+scoreChip+'</div><div class="rec-sec"><div class="rec-h">Contact</div><div class="mini-grid"><div><div class="k">Mobile</div><div class="v v-mob">'+(r.mobile?fmtMobile(r.mobile):'')+'</div></div><div><div class="k">Email</div><div class="v v-email">'+(r.email||'')+'</div></div></div></div><div class="rec-sec"><div class="rec-h">Induction</div><div class="mini-grid"><div><div class="k">Inductee type</div><div class="v" style="font-size:.9rem">'+(r.type||'')+'</div></div><div><div class="k">Completed</div><div class="v">'+cd+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+vu+'</div></div><div><div class="k">Attempts</div><div class="v">'+(r.attempts||1)+'</div></div><div><div class="k">Reference</div><div class="v">'+(r.indId||'')+'</div></div><div><div class="k">Version</div><div class="v" style="font-size:.8rem">'+(r.version||'')+'</div></div></div></div>'+((ans&&ans.length)?('<div class="ans-h">Question responses (first attempt)</div>'+answers):'')+revBtn+'</div></div></div>';
   setDetailPhoto(r,r.photo||null);
 }
 function closeDetail(){$('#modal-root').innerHTML=''}
