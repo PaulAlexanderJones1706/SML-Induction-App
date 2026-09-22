@@ -502,6 +502,33 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
       .sheet-body{padding:16px 16px 22px}
       .modal .sheet{max-height:90vh;overflow-x:hidden}
     }
+  
+    /* Verify-only result card (staff verify role) */
+    .vf-card{background:var(--paper);border:1px solid var(--line);border-top:6px solid var(--green);border-radius:16px;padding:22px 18px;text-align:center;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center}
+    .vf-card.bad{border-top-color:var(--orange)}
+    .vf-card .verify-photo{width:132px;height:132px;border-width:3px}
+    .vf-name{font-size:1.5rem;font-weight:900;margin-top:14px;line-height:1.1}
+    .vf-co{color:var(--muted);font-weight:600;margin-top:4px}
+    .vf-status{font-size:2.1rem;font-weight:900;letter-spacing:.01em;margin:14px 0 4px}
+    .vf-status.vf-ok{color:var(--green-dark)}
+    .vf-status.vf-bad{color:var(--orange)}
+    .vf-status.vf-none{color:var(--muted)}
+    .vf-grid{width:100%;max-width:340px;margin-top:10px;text-align:left}
+    .vf-row{display:flex;justify-content:space-between;gap:12px;padding:11px 2px;border-top:1px solid var(--line)}
+    .vf-k{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+    .vf-v{font-weight:800;text-align:right}
+    /* Compact live pass so the whole credential fits one phone screen */
+    .pv-inner{padding:26px 22px 26px}
+    .pv-brand{margin-bottom:16px;font-size:11px}
+    .pv-photo{width:128px;height:128px;border-radius:18px;margin-bottom:14px;border-width:3px}
+    .pv-status{font-size:2.3rem}
+    .pv-sub{margin-top:6px;font-size:.98rem}
+    .pv-name{margin-top:16px;font-size:1.5rem}
+    .pv-meta{margin-top:4px;font-size:.9rem}
+    .pv-vu{margin-top:12px}
+    .pv-verify{margin-top:16px}
+    .pv-instruct{margin-top:8px}
+    .pv-home{margin-top:20px}
   </style>
 </head>
 <body>
@@ -610,7 +637,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
       <div class="pass-actions">
         <button class="btn btn-dark btn-lg" onclick="sharePass()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg> Save or present my pass</button>
       </div>
-      <p class="pass-tip">Tip: share it to your own phone (e.g. to your Messages) so you keep a copy.</p>
+      <p class="pass-tip">An email with a link to this valid induction pass has been sent to you. You may also wish to take a screenshot and save it to Photos for quick access.</p>
       <div class="sent">
         <div class="line"><div class="d"><svg viewBox="0 0 24 24" fill="none" stroke="#30642D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div><div><b>A copy of your pass is on its way</b><span>Being sent to <span id="s-email"></span> and <span id="s-sms"></span>. Your induction is complete even if this takes a little longer to arrive.</span></div></div>
         <div class="line"><div class="d"><svg viewBox="0 0 24 24" fill="none" stroke="#30642D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div><b>Your on-screen pass is your proof of completion</b><span>Show this screen, or the emailed copy, to Sydney Markets Security on site.</span></div></div>
@@ -687,7 +714,7 @@ h1.big{font-size:clamp(2rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em;li
     </div>
 
     <div id="pane-faq" class="hidden">
-      <div class="faq-note">Draft answers for staff reference. Final policy wording, especially compliance and enforcement, to be confirmed by WHS / management before publishing.</div>
+      <div class="faq-note">Quick reference for staff verifying inductions on site.</div>
       <div class="faq" id="faq-list"></div>
     </div>
   </div>
@@ -741,15 +768,15 @@ const QUIZ=[
 ];
 
 const FAQ=[
-  {q:'Who must do the induction?',a:'Anyone entering the operational areas of the Sydney Markets site should complete the safety induction first, this includes traders and their staff, contractors, transport and delivery drivers, and members of the public visiting the retail markets.',flag:'Confirm the exact scope and any exempt groups with WHS.'},
-  {q:'Does everyone on site need to have done it?',a:'The induction is part of how Sydney Markets meets its work health and safety obligations, so all workers and visitors to operational market areas are expected to have a valid induction. Some groups may be covered by separate arrangements (for example, a tenant\u2019s own inducted employees).',flag:'Confirm which groups are covered by separate arrangements.'},
-  {q:'How often does someone need to do it?',a:'An induction is valid for 12 months. After that it expires and the person needs to complete it again before re-entering operational areas.',flag:'Renewal period is currently modelled as annual, confirm with WHS.'},
-  {q:'If it expires, will Sydney Markets remind me?',a:'The system is being built to automatically email and text a fresh induction link as an induction nears expiry, and again if it lapses, so people can re-do it before they next arrive on site.',flag:'Automated reminders are planned for a later build; confirm timing (e.g. 30 days before expiry).'},
-  {q:'What happens if someone isn\u2019t inducted?',a:'A valid induction is a condition of entry to operational areas. Someone without one can be asked to complete it on the spot, or may be refused entry to those areas until they do.',flag:'Confirm enforcement wording with WHS and security.'},
-  {q:'What is the cost of non-compliance?',a:'Beyond being refused or removed from site, work health and safety breaches can carry regulatory, insurance and liability consequences for both individuals and businesses operating at the markets.',flag:'Legal/WHS to confirm exact wording, avoid overstating penalties.'},
-  {q:'What if someone refuses to do the induction?',a:'Because the induction is a condition of entry, anyone who declines it can be refused access to the operational areas of the market.',flag:'Confirm with WHS / security policy.'},
-  {q:'Someone says they did it but the search shows nothing, what do I do?',a:'If a search returns no record, you can text them an induction link or start the induction there and then on your device. As soon as they finish, their record appears in the database and they can be verified.',flag:''},
-  {q:'What details do we collect, and how are they stored?',a:'The induction records a person\u2019s name, mobile number (their unique ID), email, optional company, a photo, and their quiz result. In the live system these are held in a secure database that authorised staff access under their own login.',flag:'Data handling, retention and privacy wording to be confirmed with WHS / privacy officer, especially for stored photos.'}
+  {q:'Who must do the induction?',a:'Anyone entering the operational areas of the Sydney Markets site should complete the safety induction first, this includes traders and their staff, contractors, transport and delivery drivers, and members of the public visiting the retail markets.'},
+  {q:'Does everyone on site need to have done it?',a:'The induction is part of how Sydney Markets meets its work health and safety obligations, so all workers and visitors to operational market areas are expected to have a valid induction. Some groups may be covered by separate arrangements, for example a tenant’s own inducted employees.'},
+  {q:'How often does someone need to do it?',a:'An induction is valid for 12 months. After that it expires and the person needs to complete it again before re-entering operational areas.'},
+  {q:'If it expires, will Sydney Markets remind me?',a:'As an induction nears expiry, Sydney Markets emails and texts a fresh induction link, and again if it lapses, so people can renew before they next arrive on site.'},
+  {q:'What happens if someone isn’t inducted?',a:'A valid induction is a condition of entry to operational areas. Someone without one can be asked to complete it on the spot, or may be refused entry to those areas until they do.'},
+  {q:'What is the cost of non-compliance?',a:'Beyond being refused or removed from site, work health and safety breaches can carry regulatory, insurance and liability consequences for both individuals and businesses operating at the markets.'},
+  {q:'What if someone refuses to do the induction?',a:'Because the induction is a condition of entry, anyone who declines it can be refused access to the operational areas of the market.'},
+  {q:'Someone says they did it but the search shows nothing, what do I do?',a:'If a search returns no record, you can text them an induction link or start the induction there and then on your device. As soon as they finish, their record appears in the database and they can be verified.'},
+  {q:'What details do we collect, and how are they stored?',a:'The induction records a person’s name, mobile number (their unique ID), email, optional company, a photo, and their quiz result. These are held in a secure database that authorised staff access under their own login.'}
 ];
 
 const INDUCTION_VERSION='SML Site Safety Induction v3.2';
@@ -1064,8 +1091,9 @@ function applyRole(){
   const admin=role==='admin';
   $$('.admin-only').forEach(el=>el.classList.toggle('hidden',!admin));
   const banner=$('#role-banner');
-  if(admin){$('#dash-title').textContent='Inductee records';banner.className='role-banner admin';banner.innerHTML='<span class="tag">Admin access</span><span>Full records, photo, scores, completions, contact details and export. You\u2019re signed in as WHS / management.</span>';renderStats();renderTable();}
-  else{$('#dash-title').textContent='Verify an inductee';banner.className='role-banner verify';banner.innerHTML='<span class="tag">Verify access</span><span>Confirm inductees on site by photo and status. Scores and full records are restricted to Admin.</span>';}
+  const tabs=document.querySelector('.dash-tabs');
+  if(admin){$('#dash-title').textContent='Inductee records';if(tabs)tabs.classList.remove('hidden');renderStats();renderTable();}
+  else{$('#dash-title').textContent='Verify an inductee';if(tabs)tabs.classList.add('hidden');$('#pane-faq').classList.add('hidden');$('#pane-lookup').classList.remove('hidden');}
   dashTab('lookup');
 }
 function renderFAQ(){$('#faq-list').innerHTML=FAQ.map(f=>'<div class="faq-item"><button class="faq-q" onclick="faqTog(this)">'+f.q+'<span class="pm">+</span></button><div class="faq-a"><div class="inner"><p>'+f.a+(f.flag?'<span class="flag">'+f.flag+'</span>':'')+'</p></div></div></div>').join('')}
@@ -1138,8 +1166,9 @@ function renderFound(r){
     const grid='<div class="res-grid"><div><div class="k">Mobile</div><div class="v">'+(r.mobile?fmtMobile(r.mobile):'')+'</div></div><div><div class="k">Company</div><div class="v" style="font-size:.9rem">'+(r.company||'')+'</div></div><div><div class="k">Completed</div><div class="v">'+cd+'</div></div><div><div class="k">Valid until</div><div class="v" style="color:'+(valid?'inherit':C.orange)+'">'+vu+'</div></div><div><div class="k">Score</div><div class="v">'+(sc!=null?'<span class="score-pill '+scoreClass(sc)+'">'+sc+'/'+QUIZ.length+'</span>':'')+'</div></div><div><div class="k">Email</div><div class="v" style="font-size:.8rem">'+(r.email||'')+'</div></div><div><div class="k">Inductee type</div><div class="v" style="font-size:.85rem">'+(r.type||'')+'</div></div><div><div class="k">Induction ref</div><div class="v" style="font-size:.85rem">'+(r.indId||'')+'</div></div></div><div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-dark" style="padding:12px 20px" onclick="openDetailCur()">View full record</button>'+((r.id&&valid)?'<button class="btn btn-ghost" style="padding:12px 20px;border-color:'+C.orange+';color:'+C.orange+'" onclick="revokeInduction(\''+r.id+'\')">Revoke induction</button>':'')+'</div>';
     $('#sec-result').innerHTML='<div class="res-found '+(valid?'':'expired')+'"><div class="res-head"><div class="idblock">'+avatarHTML(r,74,'res-photo')+'<div><div class="name">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'')+'</div></div></div>'+badge+'</div>'+grid+'</div>';
   }else{
-    const grid='<div class="res-grid"><div><div class="k">Company</div><div class="v" style="font-size:.9rem">'+(r.company||'')+'</div></div><div><div class="k">Induction</div><div class="v" style="color:'+si.color+'">'+si.label+'</div></div><div><div class="k">Completed</div><div class="v" style="font-size:.9rem">'+cd+'</div></div><div><div class="k">Valid until</div><div class="v" style="font-size:.9rem;color:'+(valid?'inherit':C.orange)+'">'+vu+'</div></div><div><div class="k">Inductee type</div><div class="v" style="font-size:.9rem">'+(r.type||'')+'</div></div><div><div class="k">Induction ref</div><div class="v" style="font-size:.9rem">'+(r.indId||'')+'</div></div></div>';
-    $('#sec-result').innerHTML='<div class="res-found '+(valid?'':'expired')+'" style="text-align:center"><div style="display:flex;flex-direction:column;align-items:center;gap:12px">'+avatarHTML(r,150,'verify-photo')+'<div><div class="name" style="font-size:1.6rem">'+r.first+' '+r.last+'</div><div class="co">'+(r.company||'')+'</div></div>'+badge+'</div><div style="text-align:left">'+grid+'</div></div>';
+    const stCls=valid?'vf-ok':(r.status==='not_found'?'vf-none':'vf-bad');
+    const gi=(k,v,c)=>'<div class="vf-row"><span class="vf-k">'+k+'</span><span class="vf-v"'+(c?(' style="color:'+c+'"'):'')+'>'+(v||'')+'</span></div>';
+    $('#sec-result').innerHTML='<div class="vf-card '+(valid?'ok':'bad')+'">'+avatarHTML(r,132,'verify-photo')+'<div class="vf-name">'+r.first+' '+r.last+'</div><div class="vf-co">'+(r.company||'')+'</div><div class="vf-status '+stCls+'">'+si.label.toUpperCase()+'</div><div class="vf-grid">'+gi('Inductee type',r.type)+gi('Valid until',vu,valid?'':C.orange)+gi('Induction ref',r.indId)+'</div></div>';
   }
 }
 function openDetailCur(){openDetail(lastFound)}
